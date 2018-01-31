@@ -59,6 +59,7 @@ public class Play extends GameState {
 		super(gsm);
 
 		System.out.println("WATTTT");
+		//System.out.println(Gdx.files.internal("TiledMap_box2d_test.tmx").file().getAbsolutePath());
 		map = new TmxMapLoader().load("map/TiledMap_box2d_test.tmx");
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
 		renderer.setView(cam);

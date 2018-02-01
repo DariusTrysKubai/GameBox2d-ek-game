@@ -18,7 +18,5 @@ public class DesktopLauncher {
 		config.vSyncEnabled = false;
 		config.foregroundFPS = 60;
 		config.backgroundFPS = 60;
-		
-		System.out.println("Hello");
 	}
 }

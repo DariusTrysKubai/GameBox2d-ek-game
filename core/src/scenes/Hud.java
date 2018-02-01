@@ -85,8 +85,6 @@ public class Hud implements Disposable{
     	test_label.setWrap(true);
     	test_label.setBounds(0, 0, 300, 5);
     	//test_label.setAlignment(Alignment.CENTER);
-    	//System.out.println(test_label.getText().length);
-    	System.out.println("VEikia ir iš čia!");
 
         //add our labels to our table, padding the top, and giving them all equal width with expandX
         table.add(test_label);

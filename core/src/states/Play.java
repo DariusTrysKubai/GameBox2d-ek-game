@@ -58,7 +58,6 @@ public class Play extends GameState {
 	public Play(GameStateManager gsm) {
 		super(gsm);
 
-		System.out.println("WATTTT");
 		//System.out.println(Gdx.files.internal("TiledMap_box2d_test.tmx").file().getAbsolutePath());
 		map = new TmxMapLoader().load("map/TiledMap_box2d_test.tmx");
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
@@ -94,8 +93,7 @@ public class Play extends GameState {
 		BodyDef bodyDefworld = new BodyDef();
 		FixtureDef fixtureDefworld = new FixtureDef();
 		PolygonShape shapeworld = new PolygonShape();
-		
-		System.out.println("OMG VEIKIA!");
+
 
 		for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
@@ -109,7 +107,6 @@ public class Play extends GameState {
 			//.out.println(rect.getWidth());
 			fixtureDefworld.shape = shapeworld;
 			bodyworld.createFixture(fixtureDefworld);
-			System.out.println("OMG VEIKIA!");
 		}
 
 		for (MapObject object : map.getLayers().get(4).getObjects().getByType(PolygonMapObject.class)) {

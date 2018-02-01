@@ -61,9 +61,6 @@ public class Game extends ApplicationAdapter {
 		font = new BitmapFont();
 		gsm = new GameStateManager(this);
 		gsm.setState(new Play(gsm));
-		
-		System.out.println("What the hell");
-		System.out.println("WTF");
 	}
 
 	@Override

@@ -97,6 +97,7 @@ public class Play extends GameState {
 		debugRenderer.render(level.getWorld(), cam.combined);
 		hud.stage.draw();
 
+		System.out.println("Hello");
 	}
 
 	public void dispose() {

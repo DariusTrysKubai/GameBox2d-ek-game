@@ -48,7 +48,7 @@ public class Play extends GameState {
 
 		player = new Player(level.getWorld());
 		player.init(level);
-		player.create();
+		player.create(sb);
 
 		debugRenderer = new Box2DDebugRenderer();
 
@@ -63,7 +63,6 @@ public class Play extends GameState {
 		player.update();
 
 		hud.update(dt);
-
 		// camera control
 		if (Gdx.input.isKeyPressed(Keys.UP)) {
 			cam.position.y += 5;
@@ -92,12 +91,10 @@ public class Play extends GameState {
 		level.getWorld().step(1 / 60f, 6, 2);
 		level.render(cam);
 
-		player.render();
+		player.render(cam);
 
 		debugRenderer.render(level.getWorld(), cam.combined);
 		hud.stage.draw();
-
-		System.out.println("Hello");
 	}
 
 	public void dispose() {

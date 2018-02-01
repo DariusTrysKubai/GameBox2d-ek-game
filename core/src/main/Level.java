@@ -49,8 +49,7 @@ public class Level {
 		// Extract collision layers from map
 		
 		// Rectangles
-		/*
-		for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
+		for (MapObject object : map.getLayers().get("collision_blocks").getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
 			bodyDefworld.type = BodyDef.BodyType.StaticBody;
@@ -63,10 +62,9 @@ public class Level {
 			fixtureDefworld.shape = shapeworld;
 			bodyworld.createFixture(fixtureDefworld);
 		}
-	*/
 		
 		// Polygons
-		/*
+		
 		for (MapObject object : map.getLayers().get("Collision_poly").getObjects().getByType(PolygonMapObject.class)) {
 			Polygon poly = ((PolygonMapObject) object).getPolygon();
 			bodyDefworld.type = BodyDef.BodyType.StaticBody;
@@ -78,7 +76,7 @@ public class Level {
 			fixtureDefworld.shape = shapeworld;
 			bodyworld.createFixture(fixtureDefworld);
 		}
-		*/
+		
 		
 		for (MapObject object : map.getLayers().get("Lake").getObjects().getByType(RectangleMapObject.class)) {
 			object.getName();

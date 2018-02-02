@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextobjectid="29">
+<map version="1.0" tiledversion="1.1.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextobjectid="43">
  <tileset firstgid="1" source="terrain_atlas.tsx"/>
  <layer name="water" width="100" height="100">
   <data encoding="csv">
@@ -440,20 +440,21 @@
   <object id="22" x="1088" y="1376" width="128" height="32"/>
   <object id="24" x="1056" y="1408" width="32" height="18"/>
   <object id="25" x="1425.33" y="1216" width="15.3333" height="17"/>
+  <object id="29" x="1488.5" y="1483.75" width="94.25" height="31"/>
+  <object id="30" x="1394.5" y="1516.75" width="94" height="20"/>
+  <object id="31" x="1556" y="1516" width="24.75" height="41.5"/>
+  <object id="32" x="1538.34" y="1537.74" width="32.5" height="123.583" rotation="-315.885"/>
+  <object id="33" x="1427.75" y="1630.25" width="48.5" height="18.25"/>
+  <object id="34" x="1407.75" y="1644.5" width="17.5" height="63.25"/>
+  <object id="35" x="1406.41" y="1689.43" width="18.0974" height="61.9158" rotation="-317.395"/>
+  <object id="36" x="1269.25" y="1725.75" width="111.75" height="17.25"/>
+  <object id="37" x="1264.75" y="1643.75" width="14.5" height="87.25"/>
+  <object id="38" x="1279.75" y="1643.5" width="17" height="6.25"/>
+  <object id="39" x="1297.75" y="1582" width="13.75" height="65.75"/>
+  <object id="40" x="1333.4" y="1547.23" width="17.25" height="46.25" rotation="29.243"/>
+  <object id="41" x="1386" y="1536.75" width="8.75" height="18.75"/>
+  <object id="42" x="1340.25" y="1547.75" width="54.25" height="7.75"/>
  </objectgroup>
  <objectgroup name="Collisions water"/>
- <objectgroup name="Collision_poly">
-  <object id="4" x="1526.5" y="1482">
-   <polygon points="0,0 -29.5,4.5 -44,34.5 -124,37 -140.5,66.5 -187.5,67.5 -205.5,102 -85,165.5"/>
-  </object>
-  <object id="6" x="1442" y="1647.5">
-   <polygon points="0,0 40.5,-1.5 121,-93.5 141,-101.5 142,-159 85,-165.5"/>
-  </object>
-  <object id="8" x="1319.5" y="1584.5">
-   <polygon points="0,0 -20,2 -27,58 -50,64 -53.5,155 67.5,156.5"/>
-  </object>
-  <object id="9" x="1441" y="1647">
-   <polygon points="0,0 -14.5,9.5 -18.5,59 -44.5,71.5 -53,92.5 -122,-64.5"/>
-  </object>
- </objectgroup>
+ <objectgroup name="Collision_poly"/>
 </map>

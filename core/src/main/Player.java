@@ -31,6 +31,7 @@ public class Player {
 	FixtureDef fixtureDef;
 	Fixture fixture;
 	public static final float player_friction = 8;
+	public static final float max_speed = 35;
 	boolean moving = false;
 
 	// Textures
@@ -70,7 +71,7 @@ public class Player {
 		bodyDef.fixedRotation = true;
 		body = world.createBody(bodyDef);
 		shape = new PolygonShape();
-		shape.setAsBox(32 / 2, 32 / 2);
+		shape.setAsBox(16 / 2, 16 / 2);
 		fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 0.2f;
@@ -181,27 +182,13 @@ public class Player {
 
 		// animation side
 		/*
-		float angle = body.getLinearVelocity().angle();
-
-		if (is_walking) {
-			if (angle < 45) {
-				dir = 1;
-				dir_still = 1;
-			} else if (angle < 135) {
-				dir = 0;
-				dir_still = 0;
-			} else if (angle < 225) {
-				dir = 3;
-				dir_still = 3;
-			} else if (angle < 315) {
-				dir = 2;
-				dir_still = 2;
-			} else if (angle < 360) {
-				dir = 1;
-				dir_still = 1;
-			}
-		}
-		*/
+		 * float angle = body.getLinearVelocity().angle();
+		 * 
+		 * if (is_walking) { if (angle < 45) { dir = 1; dir_still = 1; } else if (angle
+		 * < 135) { dir = 0; dir_still = 0; } else if (angle < 225) { dir = 3; dir_still
+		 * = 3; } else if (angle < 315) { dir = 2; dir_still = 2; } else if (angle <
+		 * 360) { dir = 1; dir_still = 1; } }
+		 */
 
 		if (moving) {
 			if (dir == 0) {
@@ -239,13 +226,19 @@ public class Player {
 			body.setLinearVelocity(temp_vector);
 		}
 
+		// Max speed
+		Vector2 temp_vector = body.getLinearVelocity();
+		float temp = (Math.min(temp_vector.len(), Player.max_speed));
+		temp_vector.setLength(temp);
+		body.setLinearVelocity(temp_vector);
+
+		// Moving boolean
 		System.out.println(body.getLinearVelocity().len());
 		if (body.getLinearVelocity().len() == 0) {
 			moving = false;
 		} else {
 			moving = true;
 		}
-		System.out.println(dir_still);
 
 	}
 
@@ -255,7 +248,7 @@ public class Player {
 		sb.setProjectionMatrix(cam.combined);
 		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 		sb.begin();
-		sb.draw(currentFrame, body.getPosition().x - (texture_size / 2), body.getPosition().y - (texture_size / 2));
+		sb.draw(currentFrame, body.getPosition().x - (texture_size / 2), body.getPosition().y - 8);
 		sb.end();
 	}
 

@@ -53,7 +53,7 @@ public class Game extends ApplicationAdapter {
 		cam.translate(V_WIDTH / 2, V_HEIGHT / 2);
 		cam.update();
 		hudcam = new OrthographicCamera();
-		hudcam.setToOrtho(false, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);
+		hudcam.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		viewport = new FitViewport(1280/2, 720/2, cam);
 		viewport.apply();
 		sb.setProjectionMatrix(cam.combined);

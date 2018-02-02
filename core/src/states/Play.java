@@ -2,9 +2,11 @@ package states;
 
 import java.awt.geom.RectangularShape;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -32,7 +34,7 @@ import scenes.Hud;
 
 public class Play extends GameState {
 
-	boolean debug = false;
+	boolean debug = true;
 
 	Player player;
 	Level level;
@@ -43,24 +45,24 @@ public class Play extends GameState {
 		super(gsm);
 
 		level = new Level(cam);
-		level.init();
-		level.create();
+		level.init(shape);
+		level.create(debug);
 
-		player = new Player(level.getWorld());
-		player.init(level);
-		player.create(sb);
+		player = new Player(level.getWorld(), debug);
+		player.initLevel(level);
+		player.create(sb, shape, cam);
 
 		debugRenderer = new Box2DDebugRenderer();
 
 		hud = new Hud(sb);
-		
+
 		cam.update();
 	}
 
 	public void update(float dt) {
 
 		level.update();
-		player.update();
+		player.update(dt);
 
 		hud.update(dt);
 		// camera control
@@ -76,10 +78,9 @@ public class Play extends GameState {
 		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			cam.position.x -= 5;
 		}
-		
+
 		cam.position.x = player.getBody().getPosition().x;
 		cam.position.y = player.getBody().getPosition().y;
-
 	}
 
 	public void render() {
@@ -87,14 +88,14 @@ public class Play extends GameState {
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
 		cam.update();
-		
-		level.getWorld().step(1 / 60f, 6, 2);
 		level.render(cam);
-
 		player.render(cam);
-
-		debugRenderer.render(level.getWorld(), cam.combined);
+		if (debug) {
+			debugRenderer.render(level.getWorld(), cam.combined);
+		}
 		hud.stage.draw();
+
+		level.getWorld().step(1 / 60f, 6, 2);
 	}
 
 	public void dispose() {

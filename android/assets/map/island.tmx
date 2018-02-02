@@ -443,15 +443,12 @@
   <object id="29" x="1488.5" y="1483.75" width="94.25" height="31"/>
   <object id="30" x="1394.5" y="1516.75" width="94" height="20"/>
   <object id="31" x="1556" y="1516" width="24.75" height="41.5"/>
-  <object id="32" x="1538.34" y="1537.74" width="32.5" height="123.583" rotation="-315.885"/>
   <object id="33" x="1427.75" y="1630.25" width="48.5" height="18.25"/>
   <object id="34" x="1407.75" y="1644.5" width="17.5" height="63.25"/>
-  <object id="35" x="1406.41" y="1689.43" width="18.0974" height="61.9158" rotation="-317.395"/>
   <object id="36" x="1269.25" y="1725.75" width="111.75" height="17.25"/>
   <object id="37" x="1264.75" y="1643.75" width="14.5" height="87.25"/>
   <object id="38" x="1279.75" y="1643.5" width="17" height="6.25"/>
   <object id="39" x="1297.75" y="1582" width="13.75" height="65.75"/>
-  <object id="40" x="1333.4" y="1547.23" width="17.25" height="46.25" rotation="29.243"/>
   <object id="41" x="1386" y="1536.75" width="8.75" height="18.75"/>
   <object id="42" x="1340.25" y="1547.75" width="54.25" height="7.75"/>
  </objectgroup>

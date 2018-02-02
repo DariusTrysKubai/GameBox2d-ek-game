@@ -2,12 +2,15 @@ package main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -19,29 +22,41 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.mygdx.game.Game;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Player {
 
+	boolean debug;
+
+	// Player classes
+	Player_control control;
+
+	int move_direction = 0; // 0-up, 1-right, 2-down, 3-left
 	Vector2 position;
+	Vector2 position_tile;
 	BodyDef bodyDef;
 	Body body;
-	PolygonShape shape;
 	FixtureDef fixtureDef;
 	Fixture fixture;
 	public static final float player_friction = 8;
 	public static final float max_speed = 35;
+	public static final float SPEED = 60;
+	public float shift = 0;
 	boolean moving = false;
 
 	// Textures
 	SpriteBatch sb;
 	Texture texture;
-	int dir = 0;
-	int dir_still = 0;
+	int dir = 2;
+	int dir_still = 2;
 	Texture anim;
 	int FRAME_COLS = 9, FRAME_ROWS = 4;
 	float texture_size;
+
+	ShapeRenderer shape;
+	OrthographicCamera cam;
 
 	Animation<TextureRegion> walkAnimation_down;
 	Animation<TextureRegion> walkAnimation_up;
@@ -61,10 +76,15 @@ public class Player {
 	// references
 	Level level;
 
-	public Player(World world) {
+	public Player(World world, boolean debug) {
+
+		this.debug = debug;
+		control = new Player_control(this);
 
 		// box2d create
-		position = new Vector2(0, 0);
+		PolygonShape shape;
+		position = new Vector2();
+		position_tile = new Vector2();
 		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(0, 0);
@@ -131,6 +151,7 @@ public class Player {
 		// walkAnimation_right.setPlayMode(PlayMode.LOOP_PINGPONG);
 
 		walkAnimation = walkAnimation_down;
+
 		still_down = new Animation<TextureRegion>(0.125f, walkFrames_still_down);
 		still_up = new Animation<TextureRegion>(0.125f, walkFrames_still_up);
 		still_left = new Animation<TextureRegion>(0.125f, walkFrames_still_left);
@@ -141,55 +162,83 @@ public class Player {
 
 		position.x = ((Game.ORIGINAL_WIDTH / 2) - (texture_size / 2)) * 2;
 		position.y = ((Game.ORIGINAL_HEIGHT / 2) - (texture_size / 2)) * 2;
+
+		position_tile.x = body.getPosition().x / 32;
+		position_tile.y = body.getPosition().y / 32;
 	}
 
-	public void create(SpriteBatch sb) {
+	public void create(SpriteBatch sb, ShapeRenderer shape, OrthographicCamera cam) {
 		this.sb = sb;
+		this.shape = shape;
+		this.cam = cam;
 	}
 
-	public void init(Level level) {
+	public void initLevel(Level level) {
 		this.level = level;
 		spawn(3);
 	}
 
-	public void update() {
+	public void update(float dt) {
 
-		moving = false;
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			body.applyForceToCenter(new Vector2(0, 100000f), true);
-			moving = true;
-			dir = 0;
-			dir_still = 0;
-		}
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-			body.applyForceToCenter(new Vector2(100000f, 0), true);
-			moving = true;
-			dir = 1;
-			dir_still = 1;
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			body.applyForceToCenter(new Vector2(-100000f, 0), true);
-			moving = true;
-			dir = 3;
-			dir_still = 3;
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-			body.applyForceToCenter(new Vector2(0, -100000f), true);
-			moving = true;
-			dir = 2;
-			dir_still = 2;
-		}
+		// moving = false;
 
-		// animation side
+		control.update(cam);
+
+		// players friction
 		/*
-		 * float angle = body.getLinearVelocity().angle();
-		 * 
-		 * if (is_walking) { if (angle < 45) { dir = 1; dir_still = 1; } else if (angle
-		 * < 135) { dir = 0; dir_still = 0; } else if (angle < 225) { dir = 3; dir_still
-		 * = 3; } else if (angle < 315) { dir = 2; dir_still = 2; } else if (angle <
-		 * 360) { dir = 1; dir_still = 1; } }
+		 * if (!moving && body.getLinearVelocity().len() != 0) { Vector2 temp_vector =
+		 * body.getLinearVelocity(); float temp = (Math.max((temp_vector.len() -
+		 * player_friction), 0)); temp_vector.setLength(temp);
+		 * body.setLinearVelocity(temp_vector); }
 		 */
 
+		// Max speed
+		/*
+		 * Vector2 temp_vector = body.getLinearVelocity(); float temp =
+		 * (Math.min(temp_vector.len(), Player.max_speed)); temp_vector.setLength(temp);
+		 * body.setLinearVelocity(temp_vector);
+		 */
+
+		// Moving boolean
+		/*
+		 * if (body.getLinearVelocity().len() == 0) { moving = false; } else { moving =
+		 * true; }
+		 */
+
+		// update standing tile
+		position_tile.x = (float) Math.floor(body.getPosition().x / 32);
+		position_tile.y = (float) Math.floor(body.getPosition().y / 32);
+
+		// MAIN MOVEMENT
+
+		if (moving) {
+			switch (move_direction) {
+			// up
+			case 0:
+				body.setTransform(body.getPosition().x, body.getPosition().y + (Player.SPEED * dt), 0);
+				shift += +(Player.SPEED * dt);
+				break;
+			// right
+			case 1:
+				break;
+			// down
+			case 2:
+
+				break;
+			// left
+			case 3:
+
+				break;
+			}
+		}
+
+		// check if reached the destination
+		if (shift >= Level.tile_size) {
+			moving = false;
+			reset_shift();
+		}
+
+		// Update players animation
 		if (moving) {
 			if (dir == 0) {
 				walkAnimation = walkAnimation_up;
@@ -217,32 +266,21 @@ public class Player {
 				walkAnimation = still_left;
 			}
 		}
-
-		// players friction
-		if (!moving && body.getLinearVelocity().len() != 0) {
-			Vector2 temp_vector = body.getLinearVelocity();
-			float temp = (Math.max((temp_vector.len() - player_friction), 0));
-			temp_vector.setLength(temp);
-			body.setLinearVelocity(temp_vector);
-		}
-
-		// Max speed
-		Vector2 temp_vector = body.getLinearVelocity();
-		float temp = (Math.min(temp_vector.len(), Player.max_speed));
-		temp_vector.setLength(temp);
-		body.setLinearVelocity(temp_vector);
-
-		// Moving boolean
-		System.out.println(body.getLinearVelocity().len());
-		if (body.getLinearVelocity().len() == 0) {
-			moving = false;
-		} else {
-			moving = true;
-		}
-
 	}
 
 	public void render(OrthographicCamera cam) {
+
+		if (debug) {
+
+			// shape.setProjectionMatrix(cam.combined);
+			// cam.update();
+			shape.begin(ShapeType.Line);
+			shape.setColor(Color.RED);
+			shape.rect(position_tile.x * 32, position_tile.y * 32, 32, 32);
+			shape.end();
+
+			control.render(shape);
+		}
 
 		stateTime += Gdx.graphics.getDeltaTime();
 		sb.setProjectionMatrix(cam.combined);
@@ -273,7 +311,16 @@ public class Player {
 				System.out.println("Name: " + object.getName());
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();
 				System.out.println("x: " + rect.x + " y: " + rect.y);
-				body.setTransform(new Vector2(rect.x, rect.y), 0);
+				// set the player in the middle of the tile
+				float temp_x = (float) Math.floor(rect.x / Level.tile_size);
+				float temp_y = (float) Math.floor(rect.y / Level.tile_size);
+				temp_x *= Level.tile_size;
+				temp_y *= Level.tile_size;
+				temp_x += Level.tile_size / 2;
+				temp_y += Level.tile_size / 2;
+
+				System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
+				body.setTransform(new Vector2(temp_x, temp_y), 0);
 			}
 
 		}
@@ -294,6 +341,55 @@ public class Player {
 		 * //.out.println(rect.getWidth()); fixtureDefworld.shape = shapeworld;
 		 * level.bodyworld.createFixture(fixtureDefworld); }
 		 */
+	}
+
+	public void move_up() {
+		// body.applyForceToCenter(new Vector2(0, 100000f), true);
+		moving = true;
+		move_direction = 0;
+		dir = 0;
+		dir_still = 0;
+	}
+
+	public void move_right() {
+		// body.applyForceToCenter(new Vector2(100000f, 0), true);
+		moving = true;
+		move_direction = 1;
+		dir = 1;
+		dir_still = 1;
+	}
+
+	public void move_down() {
+		// body.applyForceToCenter(new Vector2(0, -100000f), true);
+		moving = true;
+		move_direction = 2;
+		dir = 2;
+		dir_still = 2;
+	}
+
+	public void move_left() {
+		// body.applyForceToCenter(new Vector2(-100000f, 0), true);
+		moving = true;
+		move_direction = 3;
+		dir = 3;
+		dir_still = 3;
+	}
+
+	public void fix_position_in_tile() {
+		System.out.println("Fixing position");
+		System.out.println("old x: " + body.getPosition().x + " y: " + body.getPosition().y);
+		float temp_x = (float) Math.floor(body.getPosition().x / Level.tile_size);
+		float temp_y = (float) Math.floor(body.getPosition().y / Level.tile_size);
+		temp_x *= Level.tile_size;
+		temp_y *= Level.tile_size;
+		temp_x += Level.tile_size / 2;
+		temp_y += Level.tile_size / 2;
+		body.setTransform(new Vector2(temp_x, temp_y), 0);
+		System.out.println("new x: " + body.getPosition().x + " y: " + body.getPosition().y);
+	}
+	
+	public void reset_shift() {
+		shift = 0;
 	}
 
 }

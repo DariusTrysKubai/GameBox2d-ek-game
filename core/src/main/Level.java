@@ -36,7 +36,7 @@ public class Level {
 	TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	public int collumn, row;
-	
+
 	public static final int tile_size = 32;
 
 	public Body bodyworld;
@@ -77,46 +77,45 @@ public class Level {
 		 */
 
 		// Rectangles
-		for (MapObject object : map.getLayers().get("collision_blocks").getObjects()
-				.getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
-			bodyDefworld.type = BodyDef.BodyType.StaticBody;
-			bodyDefworld.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-
-			bodyworld = world.createBody(bodyDefworld);
-
-			shapeworld.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-			// .out.println(rect.getWidth());
-			fixtureDefworld.shape = shapeworld;
-			bodyworld.createFixture(fixtureDefworld);
-		}
+		/*
+		 * for (MapObject object : map.getLayers().get("collision_blocks").getObjects()
+		 * .getByType(RectangleMapObject.class)) { Rectangle rect =
+		 * ((RectangleMapObject) object).getRectangle();
+		 * 
+		 * bodyDefworld.type = BodyDef.BodyType.StaticBody;
+		 * bodyDefworld.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() +
+		 * rect.getHeight() / 2));
+		 * 
+		 * bodyworld = world.createBody(bodyDefworld);
+		 * 
+		 * shapeworld.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2); //
+		 * .out.println(rect.getWidth()); fixtureDefworld.shape = shapeworld;
+		 * bodyworld.createFixture(fixtureDefworld); }
+		 */
 
 		// Polygons
-
-		for (MapObject object : map.getLayers().get("Collision_poly").getObjects().getByType(PolygonMapObject.class)) {
-			Polygon poly = ((PolygonMapObject) object).getPolygon();
-			bodyDefworld.type = BodyDef.BodyType.StaticBody;
-			bodyDefworld.position.set(poly.getX(), poly.getY());
-
-			bodyworld = world.createBody(bodyDefworld);
-
-			shapeworld.set(poly.getVertices());
-			fixtureDefworld.shape = shapeworld;
-			bodyworld.createFixture(fixtureDefworld);
-		}
-
-		for (MapObject object : map.getLayers().get("Lake").getObjects().getByType(RectangleMapObject.class)) {
-			object.getName();
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
-			bodyDefworld.type = BodyDef.BodyType.StaticBody;
-			bodyDefworld.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-			bodyworld = world.createBody(bodyDefworld);
-			shapeworld.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-			fixtureDefworld.shape = shapeworld;
-			bodyworld.createFixture(fixtureDefworld);
-		}
-
+		/*
+		 * for (MapObject object :
+		 * map.getLayers().get("Collision_poly").getObjects().getByType(PolygonMapObject
+		 * .class)) { Polygon poly = ((PolygonMapObject) object).getPolygon();
+		 * bodyDefworld.type = BodyDef.BodyType.StaticBody;
+		 * bodyDefworld.position.set(poly.getX(), poly.getY());
+		 * 
+		 * bodyworld = world.createBody(bodyDefworld);
+		 * 
+		 * shapeworld.set(poly.getVertices()); fixtureDefworld.shape = shapeworld;
+		 * bodyworld.createFixture(fixtureDefworld); }
+		 * 
+		 * for (MapObject object :
+		 * map.getLayers().get("Lake").getObjects().getByType(RectangleMapObject.class))
+		 * { object.getName(); Rectangle rect = ((RectangleMapObject)
+		 * object).getRectangle(); bodyDefworld.type = BodyDef.BodyType.StaticBody;
+		 * bodyDefworld.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() +
+		 * rect.getHeight() / 2)); bodyworld = world.createBody(bodyDefworld);
+		 * shapeworld.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+		 * fixtureDefworld.shape = shapeworld; bodyworld.createFixture(fixtureDefworld);
+		 * }
+		 */
 	}
 
 	public void init(ShapeRenderer shape) {
@@ -160,11 +159,11 @@ public class Level {
 	public Body getBodyWorld() {
 		return bodyworld;
 	}
-	
+
 	public static int get_clicked_tile_x(OrthographicCamera cam) {
 		return (int) (cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).x / tile_size);
 	}
-	
+
 	public static int get_clicked_tile_y(OrthographicCamera cam) {
 		return (int) (cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0)).y / tile_size);
 	}

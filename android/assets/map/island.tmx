@@ -428,24 +428,6 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup name="collision_blocks">
-  <object id="45" x="1504" y="1472" width="64" height="96"/>
-  <object id="46" x="1472" y="1504" width="32" height="128"/>
-  <object id="47" x="1312" y="1600" width="64" height="128"/>
-  <object id="48" x="1280" y="1664" width="32" height="64"/>
-  <object id="49" x="1376" y="1536" width="32" height="160"/>
-  <object id="50" x="1344" y="1536" width="32" height="64"/>
-  <object id="51" x="1408" y="1504" width="64" height="128"/>
-  <object id="58" x="1312" y="1568" width="32" height="32"/>
-  <object id="59" x="1280" y="1632" width="32" height="32"/>
-  <object id="60" x="1248" y="1664" width="32" height="64"/>
-  <object id="62" x="1376" y="1696" width="32" height="32"/>
-  <object id="63" x="1408" y="1632" width="32" height="32"/>
-  <object id="64" x="1408" y="1664" width="32" height="32"/>
-  <object id="66" x="1504" y="1568" width="32" height="32"/>
- </objectgroup>
- <objectgroup name="Collisions water"/>
- <objectgroup name="Collision_poly"/>
  <layer name="Collision blocks" width="100" height="100" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

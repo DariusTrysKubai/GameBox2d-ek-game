@@ -10,8 +10,8 @@ import main.Level;
 
 public class TmxFlatTiledGraph implements TmxTiledGraph<TmxFlatTiledNode> {
 
-	public static final int graphWidth = Level.tile_size * 100;
-	public static final int graphHeight = Level.tile_size * 100;
+	public static final int graphWidth = 100;
+	public static final int graphHeight = 100;
 
 	protected Array<TmxFlatTiledNode> nodes;
 
@@ -26,12 +26,14 @@ public class TmxFlatTiledGraph implements TmxTiledGraph<TmxFlatTiledNode> {
 
 	@Override
 	public void init(TiledMap tiledMap) {
+		
 		int map[][] = TmxMapToGraph.tilesToNodes(graphWidth, graphHeight, tiledMap);
 		for (int x = 0; x < graphWidth; x++) {
 			for (int y = 0; y < graphHeight; y++) {
 				nodes.add(new TmxFlatTiledNode(x, y, map[x][y], 4));
 			}
 		}
+		
 		for (int x = 0; x < graphWidth; x++) {
 			int idx = x * graphHeight;
 			for (int y = 0; y < graphHeight; y++) {

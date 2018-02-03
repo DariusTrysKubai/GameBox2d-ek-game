@@ -220,14 +220,18 @@ public class Player {
 				break;
 			// right
 			case 1:
+				body.setTransform(body.getPosition().x + (Player.SPEED * dt), body.getPosition().y, 0);
+				shift += +(Player.SPEED * dt);
 				break;
 			// down
 			case 2:
-
+				body.setTransform(body.getPosition().x, body.getPosition().y - (Player.SPEED * dt), 0);
+				shift += +(Player.SPEED * dt);
 				break;
 			// left
 			case 3:
-
+				body.setTransform(body.getPosition().x - (Player.SPEED * dt), body.getPosition().y, 0);
+				shift += +(Player.SPEED * dt);
 				break;
 			}
 		}
@@ -236,6 +240,7 @@ public class Player {
 		if (shift >= Level.tile_size) {
 			moving = false;
 			reset_shift();
+			fix_position_in_tile();
 		}
 
 		// Update players animation
@@ -300,7 +305,7 @@ public class Player {
 
 	public void spawn(int spawn_point) {
 
-		System.out.println("Spawning player at spawnpoint: " + spawn_point);
+		//System.out.println("Spawning player at spawnpoint: " + spawn_point);
 		// BodyDef bodyDefworld = new BodyDef();
 		// FixtureDef fixtureDefworld = new FixtureDef();
 		// shapeworld = new PolygonShape();
@@ -308,9 +313,9 @@ public class Player {
 		for (MapObject object : level.getMap().getLayers().get("spawn_points").getObjects()
 				.getByType(RectangleMapObject.class)) {
 			if (Integer.parseInt(object.getName()) == spawn_point) {
-				System.out.println("Name: " + object.getName());
+				//System.out.println("Name: " + object.getName());
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();
-				System.out.println("x: " + rect.x + " y: " + rect.y);
+				//System.out.println("x: " + rect.x + " y: " + rect.y);
 				// set the player in the middle of the tile
 				float temp_x = (float) Math.floor(rect.x / Level.tile_size);
 				float temp_y = (float) Math.floor(rect.y / Level.tile_size);
@@ -319,7 +324,7 @@ public class Player {
 				temp_x += Level.tile_size / 2;
 				temp_y += Level.tile_size / 2;
 
-				System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
+				//System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
 				body.setTransform(new Vector2(temp_x, temp_y), 0);
 			}
 
@@ -376,8 +381,8 @@ public class Player {
 	}
 
 	public void fix_position_in_tile() {
-		System.out.println("Fixing position");
-		System.out.println("old x: " + body.getPosition().x + " y: " + body.getPosition().y);
+		//System.out.println("Fixing position");
+		//System.out.println("old x: " + body.getPosition().x + " y: " + body.getPosition().y);
 		float temp_x = (float) Math.floor(body.getPosition().x / Level.tile_size);
 		float temp_y = (float) Math.floor(body.getPosition().y / Level.tile_size);
 		temp_x *= Level.tile_size;
@@ -385,11 +390,19 @@ public class Player {
 		temp_x += Level.tile_size / 2;
 		temp_y += Level.tile_size / 2;
 		body.setTransform(new Vector2(temp_x, temp_y), 0);
-		System.out.println("new x: " + body.getPosition().x + " y: " + body.getPosition().y);
+		//System.out.println("new x: " + body.getPosition().x + " y: " + body.getPosition().y);
 	}
-	
+
 	public void reset_shift() {
 		shift = 0;
+	}
+	
+	public Player_control get_control() {
+		return control;
+	}
+	
+	public Vector2 get_position_tile() {
+		return position_tile;
 	}
 
 }

@@ -16,7 +16,7 @@ public class TmxMapToGraph {
 	public static int[][] tilesToNodes(int mapWidthInTiles, int mapHeightInTiles, TiledMap tiledMap) {
 		int[][] map = new int[mapWidthInTiles][mapHeightInTiles];
 		TiledMapTileLayer layer;
-		layer = (TiledMapTileLayer) tiledMap.getLayers().get(8);
+		layer = (TiledMapTileLayer) tiledMap.getLayers().get(5);
 		for (int x = 0; x < layer.getWidth(); x++) {
 			for (int y = 0; y < layer.getHeight(); y++) {
 				Cell cell = layer.getCell(x, y);

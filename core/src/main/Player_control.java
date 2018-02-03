@@ -12,6 +12,9 @@ public class Player_control {
 
 	Player player;
 	Vector2 clicked_tile;
+	
+	boolean was_updated_last_frame = false;
+	boolean target_updated = false;
 
 	public Player_control(Player player) {
 		this.player = player;
@@ -25,19 +28,34 @@ public class Player_control {
 	public void update(OrthographicCamera cam) {
 
 		// Get pressed tile
-		if (Gdx.input.isTouched()) {
+		if (Gdx.input.isTouched() && !was_updated_last_frame) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
-			player.move_up();
+			target_updated = true;
+			was_updated_last_frame = true;
+		}
+		
+		if(!Gdx.input.isTouched() && was_updated_last_frame) {
+			was_updated_last_frame = false;
+			target_updated = false;
 		}
 
-		/*
-		 * // control with keyboard if (Gdx.input.isKeyPressed(Keys.W)) {
-		 * player.move_up(); } if (Gdx.input.isKeyPressed(Keys.D)) {
-		 * player.move_right(); } if (Gdx.input.isKeyPressed(Keys.A)) {
-		 * player.move_left(); } if (Gdx.input.isKeyPressed(Keys.S)) {
-		 * player.move_down(); }
-		 */
+		// control with keyboard
+		if (!player.moving) {
+			if (Gdx.input.isKeyPressed(Keys.W)) {
+				player.move_up();
+			}
+			if (Gdx.input.isKeyPressed(Keys.D)) {
+				player.move_right();
+			}
+			if (Gdx.input.isKeyPressed(Keys.A)) {
+				player.move_left();
+			}
+			if (Gdx.input.isKeyPressed(Keys.S)) {
+				player.move_down();
+			}
+		}
+
 		// control with touch
 
 		/*
@@ -49,8 +67,7 @@ public class Player_control {
 		 * player.move_left(); } else if (angle < 315) { player.move_up(); } else if
 		 * (angle < 360) { player.move_right(); }
 		 * 
-		 * System.out.println("Angle: " + angle + " touch x: " + x + " y: " + y);
-		 * }
+		 * System.out.println("Angle: " + angle + " touch x: " + x + " y: " + y); }
 		 */
 
 	}
@@ -60,6 +77,14 @@ public class Player_control {
 		shape.rect(clicked_tile.x * Level.tile_size, clicked_tile.y * Level.tile_size, Level.tile_size,
 				Level.tile_size);
 		shape.end();
+	}
+	
+	public Vector2 get_target_tile() {
+		return clicked_tile;
+	}
+	
+	public boolean get_target_update() {
+		return target_updated;
 	}
 
 }

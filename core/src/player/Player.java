@@ -36,7 +36,7 @@ public class Player {
 	// Player classes
 	Player_control control;
 
-	int move_direction = 0; // 0-up, 1-right, 2-down, 3-left
+
 	Vector2 position;
 	Vector2 position_tile;
 	BodyDef bodyDef;
@@ -46,15 +46,10 @@ public class Player {
 	public static final float player_friction = 8;
 	public static final float max_speed = 35;
 	public static final float SPEED = 60;
-	public float shift = 0;
-	boolean moving = false;
-	boolean finished_moving = false;
 
 	// Textures
 	SpriteBatch sb;
 	Texture texture;
-	int dir = 2;
-	int dir_still = 2;
 	Texture anim;
 	int FRAME_COLS = 9, FRAME_ROWS = 4;
 	float texture_size;
@@ -156,7 +151,6 @@ public class Player {
 		still_right = new Animation<TextureRegion>(0.125f, walkFrames_still_right);
 
 		texture_size = tmp[0][0].getRegionWidth();
-		moving = false;
 
 		position.x = ((Game.ORIGINAL_WIDTH / 2) - (texture_size / 2)) * 2;
 		position.y = ((Game.ORIGINAL_HEIGHT / 2) - (texture_size / 2)) * 2;
@@ -180,71 +174,38 @@ public class Player {
 
 	public void update(float dt) {
 
-		control.update(cam);
+		control.update(dt, cam);
 
 		// update standing tile
 		position_tile.x = (float) Math.floor(body.getPosition().x / 32);
 		position_tile.y = (float) Math.floor(body.getPosition().y / 32);
 
-		// MAIN MOVEMENT
-
-		if (moving) {
-			switch (move_direction) {
-			// up
-			case 0:
-				body.setTransform(body.getPosition().x, body.getPosition().y + (Player.SPEED * dt), 0);
-				shift += +(Player.SPEED * dt);
-				break;
-			// right
-			case 1:
-				body.setTransform(body.getPosition().x + (Player.SPEED * dt), body.getPosition().y, 0);
-				shift += +(Player.SPEED * dt);
-				break;
-			// down
-			case 2:
-				body.setTransform(body.getPosition().x, body.getPosition().y - (Player.SPEED * dt), 0);
-				shift += +(Player.SPEED * dt);
-				break;
-			// left
-			case 3:
-				body.setTransform(body.getPosition().x - (Player.SPEED * dt), body.getPosition().y, 0);
-				shift += +(Player.SPEED * dt);
-				break;
-			}
-		}
-
-		// check if reached the destination
-		if (shift >= Level.tile_size) {
-			moving = false;
-			reset_shift();
-			fix_position_in_tile();
-		}
 
 		// Update players animation
-		if (moving) {
-			if (dir == 0) {
+		if (control.moving) {
+			if (control.dir == 0) {
 				walkAnimation = walkAnimation_up;
 			}
-			if (dir == 1) {
+			if (control.dir == 1) {
 				walkAnimation = walkAnimation_right;
 			}
-			if (dir == 2) {
+			if (control.dir == 2) {
 				walkAnimation = walkAnimation_down;
 			}
-			if (dir == 3) {
+			if (control.dir == 3) {
 				walkAnimation = walkAnimation_left;
 			}
 		} else {
-			if (dir_still == 0) {
+			if (control.dir_still == 0) {
 				walkAnimation = still_up;
 			}
-			if (dir_still == 1) {
+			if (control.dir_still == 1) {
 				walkAnimation = still_right;
 			}
-			if (dir_still == 2) {
+			if (control.dir_still == 2) {
 				walkAnimation = still_down;
 			}
-			if (dir_still == 3) {
+			if (control.dir_still == 3) {
 				walkAnimation = still_left;
 			}
 		}
@@ -282,7 +243,7 @@ public class Player {
 
 	public void spawn(int spawn_point) {
 
-		//System.out.println("Spawning player at spawnpoint: " + spawn_point);
+		// System.out.println("Spawning player at spawnpoint: " + spawn_point);
 		// BodyDef bodyDefworld = new BodyDef();
 		// FixtureDef fixtureDefworld = new FixtureDef();
 		// shapeworld = new PolygonShape();
@@ -290,9 +251,9 @@ public class Player {
 		for (MapObject object : level.getMap().getLayers().get("spawn_points").getObjects()
 				.getByType(RectangleMapObject.class)) {
 			if (Integer.parseInt(object.getName()) == spawn_point) {
-				//System.out.println("Name: " + object.getName());
+				// System.out.println("Name: " + object.getName());
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();
-				//System.out.println("x: " + rect.x + " y: " + rect.y);
+				// System.out.println("x: " + rect.x + " y: " + rect.y);
 				// set the player in the middle of the tile
 				float temp_x = (float) Math.floor(rect.x / Level.tile_size);
 				float temp_y = (float) Math.floor(rect.y / Level.tile_size);
@@ -301,7 +262,7 @@ public class Player {
 				temp_x += Level.tile_size / 2;
 				temp_y += Level.tile_size / 2;
 
-				//System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
+				// System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
 				body.setTransform(new Vector2(temp_x, temp_y), 0);
 			}
 
@@ -325,65 +286,13 @@ public class Player {
 		 */
 	}
 
-	public void move_up() {
-		// body.applyForceToCenter(new Vector2(0, 100000f), true);
-		moving = true;
-		move_direction = 0;
-		dir = 0;
-		dir_still = 0;
-	}
 
-	public void move_right() {
-		// body.applyForceToCenter(new Vector2(100000f, 0), true);
-		moving = true;
-		move_direction = 1;
-		dir = 1;
-		dir_still = 1;
-	}
-
-	public void move_down() {
-		// body.applyForceToCenter(new Vector2(0, -100000f), true);
-		moving = true;
-		move_direction = 2;
-		dir = 2;
-		dir_still = 2;
-	}
-
-	public void move_left() {
-		// body.applyForceToCenter(new Vector2(-100000f, 0), true);
-		moving = true;
-		move_direction = 3;
-		dir = 3;
-		dir_still = 3;
-	}
-
-	public void fix_position_in_tile() {
-		//System.out.println("Fixing position");
-		//System.out.println("old x: " + body.getPosition().x + " y: " + body.getPosition().y);
-		float temp_x = (float) Math.floor(body.getPosition().x / Level.tile_size);
-		float temp_y = (float) Math.floor(body.getPosition().y / Level.tile_size);
-		temp_x *= Level.tile_size;
-		temp_y *= Level.tile_size;
-		temp_x += Level.tile_size / 2;
-		temp_y += Level.tile_size / 2;
-		body.setTransform(new Vector2(temp_x, temp_y), 0);
-		//System.out.println("new x: " + body.getPosition().x + " y: " + body.getPosition().y);
-	}
-
-	public void reset_shift() {
-		shift = 0;
-	}
-	
 	public Player_control get_control() {
 		return control;
 	}
-	
+
 	public Vector2 get_position_tile() {
 		return position_tile;
-	}
-	
-	public void set_moving(boolean state) {
-		this.moving = state;
 	}
 
 }

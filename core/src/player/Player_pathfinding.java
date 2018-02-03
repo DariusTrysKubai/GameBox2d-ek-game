@@ -105,12 +105,11 @@ public class Player_pathfinding {
 					if (pathFinder.metrics != null) {
 						float elapsed = (TimeUtils.nanoTime() - startTime) / 1000000f;
 						
-						System.out.println("----------------- Indexed A* Path Finder Metrics -----------------");
-						System.out.println("Visited nodes................... = " + pathFinder.metrics.visitedNodes);
-						System.out
-								.println("Open list additions............. = " + pathFinder.metrics.openListAdditions);
-						System.out.println("Open list peak.................. = " + pathFinder.metrics.openListPeak);
-						System.out.println("Path finding elapsed time (ms).. = " + elapsed);
+						//.out.println("----------------- Indexed A* Path Finder Metrics -----------------");
+						//System.out.println("Visited nodes................... = " + pathFinder.metrics.visitedNodes);
+						//System.out.println("Open list additions............. = " + pathFinder.metrics.openListAdditions);
+						//System.out.println("Open list peak.................. = " + pathFinder.metrics.openListPeak);
+						//System.out.println("Path finding elapsed time (ms).. = " + elapsed);
 						
 					}
 				}

@@ -1,13 +1,13 @@
 package player;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
 import main.Level;
@@ -18,21 +18,32 @@ public class Player_control {
 	boolean debug = false;
 
 	Player player;
+
 	Player_pathfinding pathfinding;
 	TmxTiledSmoothableGraphPath<TmxFlatTiledNode> path;
+	ArrayList<Integer> path_dir;
+
 	Level level;
 	ShapeRenderer shape;
 
 	Vector2 clicked_tile;
+	public int move_direction = 0; // 0-up, 1-right, 2-down, 3-left
+	public float shift = 0;
+	public int dir = 2;
+	public int dir_still = 2;
 
 	boolean was_updated_last_frame = false;
 	boolean target_updated = false;
+
+	boolean finished_moving = false;
+	boolean moving = false;
 
 	public Player_control(Player player, boolean debug) {
 		this.player = player;
 		this.debug = debug;
 		clicked_tile = new Vector2();
-
+		path_dir = new ArrayList<>();
+		moving = false;
 	}
 
 	public void create(Level level, ShapeRenderer shape) {
@@ -43,50 +54,139 @@ public class Player_control {
 		pathfinding.create();
 	}
 
-	public void update(OrthographicCamera cam) {
+	public void update(float dt, OrthographicCamera cam) {
+
+		// Movement update
+
+		if (moving) {
+			switch (move_direction) {
+			// up
+			case 0:
+				player.body.setTransform(player.body.getPosition().x, player.body.getPosition().y + (Player.SPEED * dt),
+						0);
+				shift += +(Player.SPEED * dt);
+				break;
+			// right
+			case 1:
+				player.body.setTransform(player.body.getPosition().x + (Player.SPEED * dt), player.body.getPosition().y,
+						0);
+				shift += +(Player.SPEED * dt);
+				break;
+			// down
+			case 2:
+				player.body.setTransform(player.body.getPosition().x, player.body.getPosition().y - (Player.SPEED * dt),
+						0);
+				shift += +(Player.SPEED * dt);
+				break;
+			// left
+			case 3:
+				player.body.setTransform(player.body.getPosition().x - (Player.SPEED * dt), player.body.getPosition().y,
+						0);
+				shift += +(Player.SPEED * dt);
+				break;
+			}
+		}
+
+		// check if reached the destination
+		if (shift >= Level.tile_size) {
+			set_moving(false);
+			reset_shift();
+			fix_position_in_tile();
+		}
 
 		target_updated = false;
-		
+
 		// Get pressed tile
 		if (Gdx.input.isTouched() && !was_updated_last_frame) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
 			target_updated = true;
 			was_updated_last_frame = true;
-			System.out.println("1");
 		}
 
 		if (!Gdx.input.isTouched() && was_updated_last_frame) {
 			was_updated_last_frame = false;
 			target_updated = false;
-			System.out.println("2");
 		}
-		
-		//System.out.println("target_updated " + target_updated + " was_updated_last_frame " + was_updated_last_frame);
+
+		// System.out.println("target_updated " + target_updated + "
+		// was_updated_last_frame " + was_updated_last_frame);
 
 		pathfinding.update(target_updated);
 
+		// If target was updated generate new movement list
 		if (target_updated) {
 			// player.set_moving(true);
+			path_dir = new ArrayList<>();
 			path = pathfinding.getPath();
 			int move_count = path.getCount();
-			for (int i = 0; i < move_count; i++) {
-				System.out.println("node index: "+ i + " x: " + path.get(i).x + " y: " + path.get(i).y);
+			for (int i = 1; i < move_count; i++) {
+				// calculate how to move along the path and generate path_dir array.
+
+				int delta_x = path.get(i).x - path.get(i - 1).x;
+				int delta_y = path.get(i).y - path.get(i - 1).y;
+				System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
+
+				// check if move to right
+				if (path.get(i).x > path.get(i - 1).x) {
+					path_dir.add(1);
+				}
+
+				// left
+				if (path.get(i).x < path.get(i - 1).x) {
+					path_dir.add(3);
+				}
+
+				// up
+				if (path.get(i).y > path.get(i - 1).y) {
+					path_dir.add(0);
+				}
+
+				// down
+				if (path.get(i).y < path.get(i - 1).y) {
+					path_dir.add(2);
+				}
+
+				// System.out.println("node index: " + i + " x: " + path.get(i).x + " y: " +
+			}
+
+			System.out.print("Printing directions list: ");
+			for (int x : path_dir) {
+				System.out.print(x + " ");
+			}
+			System.out.println();
+		}
+
+		// move player along the path_dir
+		if (path != null) {
+			if (path.getCount() != 0 && !moving) {
+				switch (path_dir.get(0)) {
+				case 0:
+					move_up();
+					path_dir_remove_first();
+					break;
+				case 1:
+					move_right();
+					path_dir_remove_first();
+					break;
+				case 2:
+					move_down();
+					path_dir_remove_first();
+					break;
+				case 3:
+					move_left();
+					path_dir_remove_first();
+					break;
+				}
+
 			}
 		}
-		
-		
 
-		// control with keyboard
-		/*
-		 * if (!player.moving) { if (Gdx.input.isKeyPressed(Keys.W)) { player.move_up();
-		 * } if (Gdx.input.isKeyPressed(Keys.D)) { player.move_right(); } if
-		 * (Gdx.input.isKeyPressed(Keys.A)) { player.move_left(); } if
-		 * (Gdx.input.isKeyPressed(Keys.S)) { player.move_down(); } }
-		 */
+		if (path == null || path_dir.size() == 1) {
+			set_moving(false);
+		}
 
 		// control with touch
-
 		/*
 		 * if (Gdx.input.isTouched()) { float x = Gdx.input.getX() -
 		 * (Gdx.graphics.getWidth() / 2); float y = Gdx.input.getY() -
@@ -120,6 +220,67 @@ public class Player_control {
 
 	public boolean get_target_update() {
 		return target_updated;
+	}
+
+	public void path_dir_remove_first() {
+		if (path_dir.size() != 1 && path_dir.size() != 0) {
+			path_dir.remove(0);
+		}
+	}
+
+	public void set_moving(boolean state) {
+		this.moving = state;
+	}
+
+	public void fix_position_in_tile() {
+		// System.out.println("Fixing position");
+		// System.out.println("old x: " + body.getPosition().x + " y: " +
+		// body.getPosition().y);
+		float temp_x = (float) Math.floor(player.body.getPosition().x / Level.tile_size);
+		float temp_y = (float) Math.floor(player.body.getPosition().y / Level.tile_size);
+		temp_x *= Level.tile_size;
+		temp_y *= Level.tile_size;
+		temp_x += Level.tile_size / 2;
+		temp_y += Level.tile_size / 2;
+		player.body.setTransform(new Vector2(temp_x, temp_y), 0);
+		// System.out.println("new x: " + body.getPosition().x + " y: " +
+		// body.getPosition().y);
+	}
+
+	public void reset_shift() {
+		shift = 0;
+	}
+
+	public void move_up() {
+		// body.applyForceToCenter(new Vector2(0, 100000f), true);
+		set_moving(true);
+		move_direction = 0;
+		dir = 0;
+		dir_still = 0;
+	}
+
+	public void move_right() {
+		// body.applyForceToCenter(new Vector2(100000f, 0), true);
+		set_moving(true);
+		move_direction = 1;
+		dir = 1;
+		dir_still = 1;
+	}
+
+	public void move_down() {
+		// body.applyForceToCenter(new Vector2(0, -100000f), true);
+		set_moving(true);
+		move_direction = 2;
+		dir = 2;
+		dir_still = 2;
+	}
+
+	public void move_left() {
+		// body.applyForceToCenter(new Vector2(-100000f, 0), true);
+		set_moving(true);
+		move_direction = 3;
+		dir = 3;
+		dir_still = 3;
 	}
 
 }

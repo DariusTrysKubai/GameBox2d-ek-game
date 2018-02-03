@@ -1,4 +1,4 @@
-package main;
+package player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -24,6 +24,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
 import com.mygdx.game.Game;
+
+import main.Level;
+
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Player {
@@ -45,6 +48,7 @@ public class Player {
 	public static final float SPEED = 60;
 	public float shift = 0;
 	boolean moving = false;
+	boolean finished_moving = false;
 
 	// Textures
 	SpriteBatch sb;
@@ -79,7 +83,6 @@ public class Player {
 	public Player(World world, boolean debug) {
 
 		this.debug = debug;
-		control = new Player_control(this);
 
 		// box2d create
 		PolygonShape shape;
@@ -145,11 +148,6 @@ public class Player {
 		walkAnimation_left = new Animation<TextureRegion>(0.125f, walkFrames_left);
 		walkAnimation_right = new Animation<TextureRegion>(0.125f, walkFrames_right);
 
-		// walkAnimation_down.setPlayMode(PlayMode.LOOP_PINGPONG);
-		// walkAnimation_up.setPlayMode(PlayMode.LOOP_PINGPONG);
-		// walkAnimation_left.setPlayMode(PlayMode.LOOP_PINGPONG);
-		// walkAnimation_right.setPlayMode(PlayMode.LOOP_PINGPONG);
-
 		walkAnimation = walkAnimation_down;
 
 		still_down = new Animation<TextureRegion>(0.125f, walkFrames_still_down);
@@ -175,35 +173,14 @@ public class Player {
 
 	public void initLevel(Level level) {
 		this.level = level;
+		control = new Player_control(this, debug);
+		control.create(level, shape);
 		spawn(3);
 	}
 
 	public void update(float dt) {
 
-		// moving = false;
-
 		control.update(cam);
-
-		// players friction
-		/*
-		 * if (!moving && body.getLinearVelocity().len() != 0) { Vector2 temp_vector =
-		 * body.getLinearVelocity(); float temp = (Math.max((temp_vector.len() -
-		 * player_friction), 0)); temp_vector.setLength(temp);
-		 * body.setLinearVelocity(temp_vector); }
-		 */
-
-		// Max speed
-		/*
-		 * Vector2 temp_vector = body.getLinearVelocity(); float temp =
-		 * (Math.min(temp_vector.len(), Player.max_speed)); temp_vector.setLength(temp);
-		 * body.setLinearVelocity(temp_vector);
-		 */
-
-		// Moving boolean
-		/*
-		 * if (body.getLinearVelocity().len() == 0) { moving = false; } else { moving =
-		 * true; }
-		 */
 
 		// update standing tile
 		position_tile.x = (float) Math.floor(body.getPosition().x / 32);
@@ -284,7 +261,7 @@ public class Player {
 			shape.rect(position_tile.x * 32, position_tile.y * 32, 32, 32);
 			shape.end();
 
-			control.render(shape);
+			control.render(cam);
 		}
 
 		stateTime += Gdx.graphics.getDeltaTime();
@@ -403,6 +380,10 @@ public class Player {
 	
 	public Vector2 get_position_tile() {
 		return position_tile;
+	}
+	
+	public void set_moving(boolean state) {
+		this.moving = state;
 	}
 
 }

@@ -5,6 +5,9 @@ import java.awt.geom.RectangularShape;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.ai.pfa.PathSmoother;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
@@ -26,10 +29,16 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import Handlers.GameStateManager;
+import ai_pathfinding.TmxTiledManhattanDistance;
+import ai_pathfinding.TmxTiledRaycastCollisionDetector;
+import ai_pathfinding.TmxTiledSmoothableGraphPath;
 import main.Level;
 import main.Player;
+import nodeNGraph.TmxFlatTiledGraph;
+import nodeNGraph.TmxFlatTiledNode;
 import scenes.Hud;
 
 public class Play extends GameState {
@@ -47,16 +56,13 @@ public class Play extends GameState {
 		level = new Level(cam);
 		level.init(shape);
 		level.create(debug);
-
 		player = new Player(level.getWorld(), debug);
 		player.initLevel(level);
 		player.create(sb, shape, cam);
-
 		debugRenderer = new Box2DDebugRenderer();
-
 		hud = new Hud(sb);
-
 		cam.update();
+
 	}
 
 	public void update(float dt) {
@@ -95,6 +101,7 @@ public class Play extends GameState {
 		}
 		hud.stage.draw();
 
+		// important!
 		level.getWorld().step(1 / 60f, 6, 2);
 	}
 
@@ -107,7 +114,7 @@ public class Play extends GameState {
 	@Override
 	public void handleInput() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }

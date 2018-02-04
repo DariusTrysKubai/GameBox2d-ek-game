@@ -62,7 +62,7 @@ public class Hud implements Disposable{
         //define a table used to organize our hud's labels
         Table table = new Table();
         table.setDebug(debug);
-        table.setPosition(0, 30);
+        table.setPosition(10, 30);
         //Top-Align table
         //table.top();
         //make the table fill the entire stage

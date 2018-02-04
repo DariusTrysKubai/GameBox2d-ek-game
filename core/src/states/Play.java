@@ -35,6 +35,7 @@ import Handlers.GameStateManager;
 import ai_pathfinding.TmxTiledManhattanDistance;
 import ai_pathfinding.TmxTiledRaycastCollisionDetector;
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
+import items.ItemManager;
 import main.Level;
 import nodeNGraph.TmxFlatTiledGraph;
 import nodeNGraph.TmxFlatTiledNode;
@@ -48,6 +49,7 @@ public class Play extends GameState {
 	Player player;
 	Level level;
 	Hud hud;
+	ItemManager itemmanager;
 	Box2DDebugRenderer debugRenderer;
 
 	public Play(GameStateManager gsm) {
@@ -61,13 +63,19 @@ public class Play extends GameState {
 		player.initLevel(level);
 		debugRenderer = new Box2DDebugRenderer();
 		hud = new Hud(sb, hudcam);
+		itemmanager = new ItemManager();
+		itemmanager.init(sb, cam, hudcam, shape, player);
+		itemmanager.create();
 		cam.update();
+		
+		level.load_items(itemmanager);
 	}
 
 	public void update(float dt) {
 
 		level.update();
 		player.update(dt);
+		itemmanager.update();
 		hud.update(dt);
 
 		// Set the camera position to the player middle
@@ -81,6 +89,7 @@ public class Play extends GameState {
 
 		cam.update();
 		level.render(cam);
+		itemmanager.render();
 		player.render(cam);
 		if (debug) {
 			debugRenderer.render(level.getWorld(), cam.combined);

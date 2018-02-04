@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
@@ -26,20 +27,15 @@ public class Hud implements Disposable{
     public Stage stage;
     private Viewport viewport;
 
-    //Mario score/time Tracking Variables
-    private Integer worldTimer;
-    private boolean timeUp; // true when the world timer reaches 0
-    private float timeCount;
-    private static Integer score;
-
-    //Scene2D widgets
-   
     private Label test_label;
     
     BitmapFont font12;
     String framerate = "Hello, I should be a frame rate";
 
     public Hud(SpriteBatch sb, OrthographicCamera hudcam){
+
+    	System.out.println(Gdx.files.getLocalStoragePath());
+    	Skin skin = new Skin(Gdx.files.internal("skins/neutralizer-ui.json"));
     	
     	// Font generation
     	FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
@@ -47,11 +43,7 @@ public class Hud implements Disposable{
     	parameter.size = 40;
     	font12 = generator.generateFont(parameter); // font size 12 pixels
     	generator.dispose(); // don't forget to dispose to avoid memory leaks!
-    	
-        //define our tracking variables
-        worldTimer = 300;
-        timeCount = 0;
-        score = 0;
+
 
         //setup the HUD viewport using a new camera seperate from our gamecam
         //define our stage using that viewport and our games spritebatch
@@ -98,5 +90,4 @@ public class Hud implements Disposable{
     @Override
     public void dispose() { stage.dispose(); }
 
-    public boolean isTimeUp() { return timeUp; }
 }

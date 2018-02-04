@@ -54,7 +54,7 @@ public class Player_pathfinding {
 		heuristic = new TmxTiledManhattanDistance<TmxFlatTiledNode>();
 		pathFinder = new IndexedAStarPathFinder<TmxFlatTiledNode>(tiledMapGraph, true);
 		pathSmoother = new PathSmoother<TmxFlatTiledNode, Vector2>(
-				new TmxTiledRaycastCollisionDetector<>(tiledMapGraph));
+				new TmxTiledRaycastCollisionDetector<TmxFlatTiledNode>(tiledMapGraph));
 	}
 
 	public void init(ShapeRenderer shape) {
@@ -85,6 +85,7 @@ public class Player_pathfinding {
 	}
 
 	private void updatePath(boolean forceUpdate) {
+		//System.out.println("New path generated ---------------");
 		int tileX = (int) (player.get_control().get_target_tile().x);
 		int tileY = (int) (player.get_control().get_target_tile().y);
 		if (forceUpdate || tileX != lastEndTileX || tileY != lastEndTileY) {

@@ -43,7 +43,7 @@ import scenes.Hud;
 
 public class Play extends GameState {
 
-	boolean debug = true;
+	boolean debug = false;
 
 	Player player;
 	Level level;
@@ -60,7 +60,7 @@ public class Play extends GameState {
 		player.create(sb, shape, cam);
 		player.initLevel(level);
 		debugRenderer = new Box2DDebugRenderer();
-		hud = new Hud(sb);
+		hud = new Hud(sb, hudcam);
 		cam.update();
 	}
 
@@ -85,6 +85,7 @@ public class Play extends GameState {
 		if (debug) {
 			debugRenderer.render(level.getWorld(), cam.combined);
 		}
+		
 		hud.stage.draw();
 
 		// important!

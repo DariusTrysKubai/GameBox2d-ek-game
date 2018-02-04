@@ -20,6 +20,8 @@ import com.mygdx.game.Game;
 
 public class Hud implements Disposable{
 
+	boolean debug = true;
+	
     //Scene2D.ui Stage and its own Viewport for HUD
     public Stage stage;
     private Viewport viewport;
@@ -31,23 +33,18 @@ public class Hud implements Disposable{
     private static Integer score;
 
     //Scene2D widgets
-    private Label countdownLabel;
-    private static Label scoreLabel;
-    private Label timeLabel;
-    private Label levelLabel;
-    private Label worldLabel;
-    private Label marioLabel;
-    
+   
     private Label test_label;
     
     BitmapFont font12;
+    String framerate = "Hello, I should be a frame rate";
 
-    public Hud(SpriteBatch sb){
+    public Hud(SpriteBatch sb, OrthographicCamera hudcam){
     	
     	// Font generation
     	FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
     	FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-    	parameter.size = 24;
+    	parameter.size = 40;
     	font12 = generator.generateFont(parameter); // font size 12 pixels
     	generator.dispose(); // don't forget to dispose to avoid memory leaks!
     	
@@ -58,36 +55,27 @@ public class Hud implements Disposable{
 
         //setup the HUD viewport using a new camera seperate from our gamecam
         //define our stage using that viewport and our games spritebatch
-        viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, new OrthographicCamera());
+        viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, hudcam);
+        hudcam.update();
         stage = new Stage(viewport, sb);
 
         //define a table used to organize our hud's labels
         Table table = new Table();
-        
-        //table2.setPosition(20, 20);
-        table.setDebug(true);
-        
+        table.setDebug(debug);
+        table.setPosition(0, 30);
         //Top-Align table
-        table.top();
+        //table.top();
         //make the table fill the entire stage
         //table.setFillParent(true);
         
         //define our labels using the String, and a Label style consisting of a font and color
-        countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel =new Label(String.format("%06d", score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        levelLabel = new Label("1-1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel = new Label("TEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        marioLabel = new Label("TEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        
-    	test_label = new Label("Very nice text. It is really long text.", new Label.LabelStyle(font12, Color.WHITE));
-    	test_label.setPosition(0, 0);
+    	test_label = new Label(framerate, new Label.LabelStyle(font12, Color.WHITE));
+    	//test_label.setPosition(0, 0);
     	test_label.setWrap(true);
-    	test_label.setBounds(0, 0, 300, 5);
-    	//test_label.setAlignment(Alignment.CENTER);
+    	//test_label.setBounds(0, 0, 300, 5);
 
         //add our labels to our table, padding the top, and giving them all equal width with expandX
-        table.add(test_label);
+        table.add(test_label).align(Align.left);
 
         //add a second row to our table
         table.row();
@@ -98,7 +86,9 @@ public class Hud implements Disposable{
     }
 
     public void update(float dt){
-
+    	framerate = String.valueOf(Gdx.graphics.getFramesPerSecond());
+    	test_label.setText("fps: "+framerate);
+    	
     }
 
     public static void addScore(int value){

@@ -36,7 +36,6 @@ public class Player {
 	// Player classes
 	Player_control control;
 
-
 	Vector2 position;
 	BodyDef bodyDef;
 	Body body;
@@ -45,7 +44,7 @@ public class Player {
 	public static final float player_friction = 8;
 	public static final float max_speed = 35;
 	public static final float SPEED = 60;
-	
+
 	public static final int UP = 0;
 	public static final int RIGHT = 1;
 	public static final int DOWN = 2;
@@ -177,7 +176,6 @@ public class Player {
 
 		control.update(dt, cam);
 
-
 		// Update players animation
 		if (control.moving) {
 			if (control.dir == 0) {
@@ -211,14 +209,15 @@ public class Player {
 	public void render(OrthographicCamera cam) {
 
 		if (debug) {
-
 			// shape.setProjectionMatrix(cam.combined);
 			// cam.update();
 			shape.begin(ShapeType.Line);
 			shape.setColor(Color.RED);
 			shape.rect(control.position_tile.x * 32, control.position_tile.y * 32, 32, 32);
 			shape.end();
+		}
 
+		if (control.moving) {
 			control.render(cam);
 		}
 
@@ -282,7 +281,6 @@ public class Player {
 		 * level.bodyworld.createFixture(fixtureDefworld); }
 		 */
 	}
-
 
 	public Player_control get_control() {
 		return control;

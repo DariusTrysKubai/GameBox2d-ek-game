@@ -17,7 +17,7 @@ import nodeNGraph.TmxFlatTiledNode;
 
 public class Player_control {
 
-	boolean debug = false;
+	boolean debug = true;
 
 	Player player;
 
@@ -40,7 +40,7 @@ public class Player_control {
 	boolean target_updated = false;
 	boolean is_target = false;
 
-	boolean finished_moving = false;
+	boolean waiting_for_path_update = false;
 	boolean moving = false;
 	boolean moving_to_next_tile = false;
 
@@ -48,7 +48,7 @@ public class Player_control {
 		this.player = player;
 		this.debug = debug;
 		clicked_tile = new Vector2();
-		path_dir = new ArrayList<>();
+		path_dir = new ArrayList<Integer>();
 		moving = false;
 		position_tile = new Vector2();
 	}
@@ -79,12 +79,12 @@ public class Player_control {
 		if (moving_to_next_tile && !path_dir.isEmpty()) {
 			// path_dir.get(0) means getting the next movement direction
 			// Moves the physical BOX2D body
-			System.out.println("Updating movement");
+			// System.out.println("Updating movement");
 			update_movement(dt, path_dir.get(0));
 		}
 
 		// move player along the path_dir
-		if (!path_dir.isEmpty() && !moving_to_next_tile) {
+		if ((!path_dir.isEmpty() && !moving_to_next_tile) && !waiting_for_path_update) {
 			switch (path_dir.get(0)) {
 			case 0:
 				move_up();
@@ -112,11 +112,11 @@ public class Player_control {
 			}
 		}
 
-		System.out.println("Moving: " + moving);
-		System.out.println("Moving to next tile: " + moving_to_next_tile);
+		// System.out.println("Moving: " + moving);
+		// System.out.println("Moving to next tile: " + moving_to_next_tile);
 		// System.out.println("Target updated " + target_updated);
 		// System.out.println("Target updated last frame " + target_updated_last_frame);
-		System.out.println();
+		// System.out.println();
 
 		// update standing tile
 		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);
@@ -136,6 +136,7 @@ public class Player_control {
 			if (cell == null) {
 				target_updated = true;
 				target_updated_last_frame = true;
+				waiting_for_path_update = true;
 			}
 
 		}
@@ -148,52 +149,37 @@ public class Player_control {
 		// if target was updated "target_updated" switches TRUE for 1 frame and then the
 		// path to that location is calculated
 
-		if (target_updated && !moving_to_next_tile) {
+		//
+		
+		if(waiting_for_path_update && !moving_to_next_tile) {
+			pathfinding.update(true);
+			waiting_for_path_update = false;
+			generate_path_dir();
+		}
+		
+		if ((target_updated && !moving_to_next_tile)) {
 			pathfinding.update(target_updated);
-
 			// If target was updated generate new movement list
 			if (target_updated) {
-				// player.set_moving(true);
-				path_dir = new ArrayList<>();
-				path = pathfinding.getPath();
-				int move_count = path.getCount();
-				for (int i = 1; i < move_count; i++) {
-					// calculate how to move along the path and generate path_dir array.
-
-					//int delta_x = path.get(i).x - path.get(i - 1).x;
-					//int delta_y = path.get(i).y - path.get(i - 1).y;
-					// System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
-
-					// check if move to right
-					if (path.get(i).x > path.get(i - 1).x) {
-						path_dir.add(1);
-					}
-
-					// left
-					if (path.get(i).x < path.get(i - 1).x) {
-						path_dir.add(3);
-					}
-
-					// up
-					if (path.get(i).y > path.get(i - 1).y) {
-						path_dir.add(0);
-					}
-
-					// down
-					if (path.get(i).y < path.get(i - 1).y) {
-						path_dir.add(2);
-					}
-
-					// System.out.println("node index: " + i + " x: " + path.get(i).x + " y: " +
-				}
-
+				waiting_for_path_update = false;
+				generate_path_dir();
 			}
 		}
 
-		if (path_dir.isEmpty() && !moving_to_next_tile) {
+		if (path_dir.isEmpty() && !moving_to_next_tile)
+
+		{
 			set_moving(false);
-			//path.clear();
+			// path.clear();
 		}
+
+		// System.out.println("Waiting for path update: " + waiting_for_path_update);
+		// System.out.println("Moving to next tile: " + moving_to_next_tile);
+		// System.out.println("Path size: " + path_dir.size());
+		// System.out.println();
+		// System.out.println("Moving: " + moving);
+		// System.out.println("Moving to next tile: " + moving_to_next_tile);
+		// System.out.println();
 
 	}
 
@@ -313,6 +299,39 @@ public class Player_control {
 
 	public void set_moving_to_next_tile(boolean state) {
 		moving_to_next_tile = state;
+	}
+
+	public void generate_path_dir() {
+		path_dir.clear();
+		path = pathfinding.getPath();
+		int move_count = path.getCount();
+		for (int i = 1; i < move_count; i++) {
+			// calculate how to move along the path and generate path_dir array.
+
+			//int delta_x = path.get(i).x - path.get(i - 1).x;
+			//int delta_y = path.get(i).y - path.get(i - 1).y;
+			//System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
+
+			// check if move to right
+			if (path.get(i).x > path.get(i - 1).x) {
+				path_dir.add(1);
+			}
+
+			// left
+			if (path.get(i).x < path.get(i - 1).x) {
+				path_dir.add(3);
+			}
+
+			// up
+			if (path.get(i).y > path.get(i - 1).y) {
+				path_dir.add(0);
+			}
+
+			// down
+			if (path.get(i).y < path.get(i - 1).y) {
+				path_dir.add(2);
+			}
+		}
 	}
 
 }

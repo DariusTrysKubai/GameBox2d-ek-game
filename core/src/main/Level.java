@@ -29,7 +29,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Level {
 
-	boolean debug;
+	boolean debug = false;
 	ShapeRenderer shape;
 
 	World world;
@@ -135,6 +135,7 @@ public class Level {
 
 		shape.setProjectionMatrix(cam.combined);
 		cam.update();
+		/*
 		if (debug) {
 			for (int i = 0; i < 50; i++) {
 				for (int j = 0; j < 50; j++) {
@@ -145,6 +146,7 @@ public class Level {
 				}
 			}
 		}
+		*/
 	}
 
 	public void dispose() {

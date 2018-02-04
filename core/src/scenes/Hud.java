@@ -33,9 +33,12 @@ public class Hud implements Disposable{
     String framerate = "Hello, I should be a frame rate";
 
     public Hud(SpriteBatch sb, OrthographicCamera hudcam){
-
-    	System.out.println(Gdx.files.getLocalStoragePath());
-    	Skin skin = new Skin(Gdx.files.internal("skins/neutralizer-ui.json"));
+    	
+    	Skin skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+    	
+    	Label label3 = new Label("This is a Label (skin) on  5 columns ", skin);
+        label3.setSize(300,50);
+        label3.setPosition(0,20);
     	
     	// Font generation
     	FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
@@ -74,7 +77,7 @@ public class Hud implements Disposable{
 
         //add our table to the stage
         stage.addActor(table);
-
+        stage.addActor(label3);
     }
 
     public void update(float dt){

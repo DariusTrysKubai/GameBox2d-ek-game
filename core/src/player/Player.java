@@ -38,7 +38,6 @@ public class Player {
 
 
 	Vector2 position;
-	Vector2 position_tile;
 	BodyDef bodyDef;
 	Body body;
 	FixtureDef fixtureDef;
@@ -46,6 +45,11 @@ public class Player {
 	public static final float player_friction = 8;
 	public static final float max_speed = 35;
 	public static final float SPEED = 60;
+	
+	public static final int UP = 0;
+	public static final int RIGHT = 1;
+	public static final int DOWN = 2;
+	public static final int LEFT = 3;
 
 	// Textures
 	SpriteBatch sb;
@@ -82,7 +86,6 @@ public class Player {
 		// box2d create
 		PolygonShape shape;
 		position = new Vector2();
-		position_tile = new Vector2();
 		bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(0, 0);
@@ -155,8 +158,6 @@ public class Player {
 		position.x = ((Game.ORIGINAL_WIDTH / 2) - (texture_size / 2)) * 2;
 		position.y = ((Game.ORIGINAL_HEIGHT / 2) - (texture_size / 2)) * 2;
 
-		position_tile.x = body.getPosition().x / 32;
-		position_tile.y = body.getPosition().y / 32;
 	}
 
 	public void create(SpriteBatch sb, ShapeRenderer shape, OrthographicCamera cam) {
@@ -175,10 +176,6 @@ public class Player {
 	public void update(float dt) {
 
 		control.update(dt, cam);
-
-		// update standing tile
-		position_tile.x = (float) Math.floor(body.getPosition().x / 32);
-		position_tile.y = (float) Math.floor(body.getPosition().y / 32);
 
 
 		// Update players animation
@@ -219,7 +216,7 @@ public class Player {
 			// cam.update();
 			shape.begin(ShapeType.Line);
 			shape.setColor(Color.RED);
-			shape.rect(position_tile.x * 32, position_tile.y * 32, 32, 32);
+			shape.rect(control.position_tile.x * 32, control.position_tile.y * 32, 32, 32);
 			shape.end();
 
 			control.render(cam);
@@ -292,7 +289,7 @@ public class Player {
 	}
 
 	public Vector2 get_position_tile() {
-		return position_tile;
+		return control.position_tile;
 	}
 
 }

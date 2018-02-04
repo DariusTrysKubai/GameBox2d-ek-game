@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Vector2;
 
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
@@ -31,6 +33,7 @@ public class Player_control {
 	public float shift = 0;
 	public int dir = 2;
 	public int dir_still = 2;
+	private int path_movement_counting = 0;
 
 	boolean was_updated_last_frame = false;
 	boolean target_updated = false;
@@ -58,6 +61,7 @@ public class Player_control {
 
 		// Movement update
 
+		// Moves the physical Box2d body
 		if (moving) {
 			switch (move_direction) {
 			// up
@@ -95,13 +99,20 @@ public class Player_control {
 		}
 
 		target_updated = false;
-
 		// Get pressed tile
 		if (Gdx.input.isTouched() && !was_updated_last_frame) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
-			target_updated = true;
-			was_updated_last_frame = true;
+
+			// check if the target is not collision tile
+			TiledMapTileLayer layer;
+			layer = (TiledMapTileLayer) level.getMap().getLayers().get(Level.coll_layer);
+			Cell cell = layer.getCell((int) (clicked_tile.x), (int) (clicked_tile.y));
+			if (cell == null) {
+				target_updated = true;
+				was_updated_last_frame = true;
+			}
+
 		}
 
 		if (!Gdx.input.isTouched() && was_updated_last_frame) {
@@ -109,9 +120,8 @@ public class Player_control {
 			target_updated = false;
 		}
 
-		// System.out.println("target_updated " + target_updated + "
-		// was_updated_last_frame " + was_updated_last_frame);
-
+		// if target was updated "target_updated" switches TRUE for 1 frame and then the
+		// path to that location is calculated
 		pathfinding.update(target_updated);
 
 		// If target was updated generate new movement list
@@ -158,32 +168,34 @@ public class Player_control {
 		}
 
 		// move player along the path_dir
-		if (path != null) {
-			if (path.getCount() != 0 && !moving) {
-				switch (path_dir.get(0)) {
+		if (path_dir != null && !path_dir.isEmpty()) {
+			if (!moving) {
+				switch (path_dir.get(path_movement_counting)) {
 				case 0:
+					path_movement_counting++;
 					move_up();
-					path_dir_remove_first();
 					break;
 				case 1:
+					path_movement_counting++;
 					move_right();
-					path_dir_remove_first();
 					break;
 				case 2:
+					path_movement_counting++;
 					move_down();
-					path_dir_remove_first();
 					break;
 				case 3:
+					path_movement_counting++;
 					move_left();
-					path_dir_remove_first();
 					break;
 				}
 
 			}
 		}
 
-		if (path == null || path_dir.size() == 1) {
+		if (path_dir.size() == path_movement_counting) {
 			set_moving(false);
+			path_movement_counting = 0;
+			path_dir.clear();
 		}
 
 		// control with touch

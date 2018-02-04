@@ -37,6 +37,9 @@ public class Level {
 	private OrthogonalTiledMapRenderer renderer;
 	public int collumn, row;
 
+	public static final int coll_layer = 5;
+	public static final int width = 100;
+	public static final int height = 100;
 	public static final int tile_size = 32;
 
 	public Body bodyworld;

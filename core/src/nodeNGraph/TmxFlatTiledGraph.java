@@ -10,8 +10,8 @@ import main.Level;
 
 public class TmxFlatTiledGraph implements TmxTiledGraph<TmxFlatTiledNode> {
 
-	public static final int graphWidth = 100;
-	public static final int graphHeight = 100;
+	public static final int graphWidth = Level.width;
+	public static final int graphHeight = Level.height;
 
 	protected Array<TmxFlatTiledNode> nodes;
 

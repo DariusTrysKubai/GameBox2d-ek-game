@@ -1,96 +1,123 @@
 package scenes;
 
-import javax.swing.GroupLayout.Alignment;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.mygdx.game.Game;
 
-public class Hud implements Disposable{
+import player.Player;
 
-	boolean debug = true;
-	
-    //Scene2D.ui Stage and its own Viewport for HUD
-    public Stage stage;
-    private Viewport viewport;
+public class Hud implements Disposable {
 
-    private Label test_label;
-    
-    BitmapFont font12;
-    String framerate = "Hello, I should be a frame rate";
+	boolean debug = false;
 
-    public Hud(SpriteBatch sb, OrthographicCamera hudcam){
-    	
-    	Skin skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
-    	
-    	Label label3 = new Label("This is a Label (skin) on  5 columns ", skin);
-        label3.setSize(300,50);
-        label3.setPosition(0,20);
-    	
-    	// Font generation
-    	FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
-    	FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-    	parameter.size = 40;
-    	font12 = generator.generateFont(parameter); // font size 12 pixels
-    	generator.dispose(); // don't forget to dispose to avoid memory leaks!
+	Player player;
 
+	public Stage stage;
+	private Viewport viewport;
 
-        //setup the HUD viewport using a new camera seperate from our gamecam
-        //define our stage using that viewport and our games spritebatch
-        viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, hudcam);
-        hudcam.update();
-        stage = new Stage(viewport, sb);
+	private Label test_label;
+	ProgressBar progressbar_health;
+	ProgressBar progressbar_hunger;
 
-        //define a table used to organize our hud's labels
-        Table table = new Table();
-        table.setDebug(debug);
-        table.setPosition(10, 30);
-        //Top-Align table
-        //table.top();
-        //make the table fill the entire stage
-        //table.setFillParent(true);
-        
-        //define our labels using the String, and a Label style consisting of a font and color
-    	test_label = new Label(framerate, new Label.LabelStyle(font12, Color.WHITE));
-    	//test_label.setPosition(0, 0);
-    	test_label.setWrap(true);
-    	//test_label.setBounds(0, 0, 300, 5);
+	BitmapFont font12;
+	String framerate = "Hello, I should be a frame rate";
 
-        //add our labels to our table, padding the top, and giving them all equal width with expandX
-        table.add(test_label).align(Align.left);
+	public Hud(SpriteBatch sb, OrthographicCamera hudcam) {
 
-        //add a second row to our table
-        table.row();
+		Skin skin = new Skin(Gdx.files.internal("skins2/flat-earth-ui.json"));
 
-        //add our table to the stage
-        stage.addActor(table);
-        stage.addActor(label3);
-    }
+		Label label3 = new Label("This is a Label (skin) on  5 columns ", skin);
+		label3.setSize(300, 50);
+		label3.setPosition(0, 20);
 
-    public void update(float dt){
-    	framerate = String.valueOf(Gdx.graphics.getFramesPerSecond());
-    	test_label.setText("fps: "+framerate);
-    	
-    }
+		// Font generation
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = 15;
+		font12 = generator.generateFont(parameter); // font size 12 pixels
+		generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
-    public static void addScore(int value){
+		viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, hudcam);
+		hudcam.update();
+		stage = new Stage(viewport, sb);
 
-    }
+		// PROGRESS BARS ---------------
 
-    @Override
-    public void dispose() { stage.dispose(); }
+		// HEALTH
+		// health laber 
+		Label label_health = new Label("HEALTH", new Label.LabelStyle(font12, Color.WHITE));
+		// health progress bar
+		progressbar_health = new ProgressBar(0, 100, 1, false, skin, "health-horizontal");
+		progressbar_health.setSize(600, 20);
+		
+		// HUNGER
+		Label label_hunger = new Label("HUNGER", new Label.LabelStyle(font12, Color.WHITE));
+		// health progress bar
+		progressbar_hunger = new ProgressBar(0, 100, 1, false, skin, "hunger-horizontal");
+		progressbar_hunger.setSize(600, 20);
+		progressbar_hunger.setValue(40);
+
+		//table
+		Table stats_table = new Table();
+		stats_table.top();
+		stats_table.setDebug(debug);
+		stats_table.setFillParent(true);
+		stats_table.add(progressbar_health).pad(10).width(200);
+		stats_table.add(progressbar_hunger).pad(10).width(200);
+		stats_table.row();
+		stats_table.add(label_health);
+		stats_table.add(label_hunger);
+
+		stage.addActor(stats_table);
+		// ---------------
+
+		Table table = new Table();
+		table.setDebug(debug);
+		table.setPosition(10, 30);
+
+		test_label = new Label(framerate, new Label.LabelStyle(font12, Color.WHITE));
+		test_label.setWrap(true);
+
+		table.add(test_label).align(Align.left);
+		table.row();
+
+		stage.addActor(table);
+		// stage.addActor(label3);
+	}
+
+	public void update(float dt) {
+		framerate = String.valueOf(Gdx.graphics.getFramesPerSecond());
+		test_label.setText("fps: " + framerate);
+
+		progressbar_health.setValue(player.stats.get_health());
+
+	}
+
+	public void init_player(Player player) {
+		this.player = player;
+	}
+
+	public static void addScore(int value) {
+
+	}
+
+	@Override
+	public void dispose() {
+		stage.dispose();
+	}
 
 }

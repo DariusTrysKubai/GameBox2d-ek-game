@@ -34,7 +34,8 @@ public class Player {
 	boolean debug;
 
 	// Player classes
-	Player_control control;
+	public Player_control control;
+	public Player_stats stats;
 
 	Vector2 position;
 	BodyDef bodyDef;
@@ -157,6 +158,7 @@ public class Player {
 		position.x = ((Game.ORIGINAL_WIDTH / 2) - (texture_size / 2)) * 2;
 		position.y = ((Game.ORIGINAL_HEIGHT / 2) - (texture_size / 2)) * 2;
 
+		stats = new Player_stats();
 	}
 
 	public void create(SpriteBatch sb, ShapeRenderer shape, OrthographicCamera cam) {
@@ -173,7 +175,7 @@ public class Player {
 	}
 
 	public void update(float dt) {
-
+		stats.update(dt);
 		control.update(dt, cam);
 
 		// Update players animation

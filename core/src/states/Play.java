@@ -68,6 +68,7 @@ public class Play extends GameState {
 		itemmanager.create();
 		cam.update();
 		
+		hud.init_player(player);
 		level.load_items(itemmanager);
 	}
 

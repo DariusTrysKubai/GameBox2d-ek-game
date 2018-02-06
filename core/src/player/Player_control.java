@@ -111,12 +111,7 @@ public class Player_control {
 				path_dir.remove(0);
 			}
 		}
-
-		// System.out.println("Moving: " + moving);
-		// System.out.println("Moving to next tile: " + moving_to_next_tile);
-		// System.out.println("Target updated " + target_updated);
-		// System.out.println("Target updated last frame " + target_updated_last_frame);
-		// System.out.println();
+	
 
 		// update standing tile
 		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);

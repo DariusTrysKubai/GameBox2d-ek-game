@@ -7,11 +7,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -27,6 +31,7 @@ public class Hud implements Disposable {
 	Player player;
 
 	public Stage stage;
+	public Stage stage2;
 	private Viewport viewport;
 
 	private Label test_label;
@@ -41,20 +46,32 @@ public class Hud implements Disposable {
 		Skin skin = new Skin(Gdx.files.internal("skins2/flat-earth-ui.json"));
 
 		Label label3 = new Label("This is a Label (skin) on  5 columns ", skin);
-		label3.setSize(300, 50);
+		label3.setSize(150, 50);
 		label3.setPosition(0, 20);
-
+		
 		// Font generation
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = 15;
+		parameter.size = 30;
 		font12 = generator.generateFont(parameter); // font size 12 pixels
 		generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
 		viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, hudcam);
 		hudcam.update();
 		stage = new Stage(viewport, sb);
+		Gdx.input.setInputProcessor(stage);
+		
+		// BUTTON
+		// 1
+		TextButton button = new TextButton("Feed", skin);
+		button.setSize(150, 40);
+		button.setPosition( (Game.V_WIDTH / 2 ) - (button.getWidth() / 2), (Game.V_HEIGHT / 2) - (button.getHeight() / 2));
+		// 2 
+		TextButton button2 = new TextButton("Test", skin);
+		button2.setSize(150, 40);
+		button2.setPosition( (Game.V_WIDTH / 2 ) - (button.getWidth() / 2) - 40, (Game.V_HEIGHT / 2) - (button.getHeight() / 2) + 250);
 
+		
 		// PROGRESS BARS ---------------
 
 		// HEALTH
@@ -81,8 +98,18 @@ public class Hud implements Disposable {
 		stats_table.row();
 		stats_table.add(label_health);
 		stats_table.add(label_hunger);
+		stats_table.row();
+		stats_table.add(button);
+		
+		button.addCaptureListener(new ChangeListener() {
+	        @Override
+	        public void changed (ChangeEvent event, Actor actor) {
+	            player.stats.add_health(10);
+	        }
+	    });
 
 		stage.addActor(stats_table);
+		//stage.addActor(button2);
 		// ---------------
 
 		Table table = new Table();

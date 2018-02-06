@@ -9,7 +9,6 @@ import com.mygdx.game.Game;
 import Handlers.GameStateManager;
 
 public abstract class GameState {
-
 	
 	protected GameStateManager gsm;
 	protected Game game;

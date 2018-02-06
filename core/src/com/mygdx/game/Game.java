@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import Handlers.GameStateManager;
+import states.Menu;
 import states.Play;
 
 public class Game extends ApplicationAdapter {
@@ -60,7 +61,7 @@ public class Game extends ApplicationAdapter {
 		shape.setProjectionMatrix(cam.combined);
 		font = new BitmapFont();
 		gsm = new GameStateManager(this);
-		gsm.setState(new Play(gsm));
+		gsm.setState(new Menu(gsm));
 	}
 
 	@Override

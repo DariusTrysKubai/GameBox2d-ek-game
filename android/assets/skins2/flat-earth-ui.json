@@ -445,6 +445,15 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		down: button-p
 		over: button-h
 	}
+	test: {
+		font: title
+		fontColor: white
+		downFontColor: white
+		overFontColor: gray
+		up: button-c
+		down: button-p
+		over: button-h
+	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {

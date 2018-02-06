@@ -1,33 +1,29 @@
 package player;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Table.Debug;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Game;
 
 import main.Level;
-
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Player {
 
@@ -119,17 +115,14 @@ public class Player {
 		int index = 0;
 		for (int i = 0; i < FRAME_COLS; i++) {
 			walkFrames_up[index++] = tmp[0][i];
-
 		}
 		index = 0;
 		for (int i = 0; i < FRAME_COLS; i++) {
 			walkFrames_left[index++] = tmp[1][i];
-
 		}
 		index = 0;
 		for (int i = 0; i < FRAME_COLS; i++) {
 			walkFrames_down[index++] = tmp[2][i];
-
 		}
 		index = 0;
 		for (int i = 0; i < FRAME_COLS; i++) {
@@ -167,10 +160,13 @@ public class Player {
 		this.cam = cam;
 	}
 
-	public void initLevel(Level level) {
-		this.level = level;
+	public void initControl(Viewport viewport) {
 		control = new Player_control(this, debug);
 		control.create(level, shape);
+	}
+
+	public void initLevel(Level level) {
+		this.level = level;
 		spawn(3);
 	}
 
@@ -178,7 +174,6 @@ public class Player {
 		stats.update(dt);
 		control.update(dt, cam);
 
-		// Update players animation
 		if (control.moving) {
 			if (control.dir == 0) {
 				walkAnimation = walkAnimation_up;
@@ -211,8 +206,6 @@ public class Player {
 	public void render(OrthographicCamera cam) {
 
 		if (debug) {
-			// shape.setProjectionMatrix(cam.combined);
-			// cam.update();
 			shape.begin(ShapeType.Line);
 			shape.setColor(Color.RED);
 			shape.rect(control.position_tile.x * 32, control.position_tile.y * 32, 32, 32);
@@ -241,47 +234,20 @@ public class Player {
 
 	public void spawn(int spawn_point) {
 
-		// System.out.println("Spawning player at spawnpoint: " + spawn_point);
-		// BodyDef bodyDefworld = new BodyDef();
-		// FixtureDef fixtureDefworld = new FixtureDef();
-		// shapeworld = new PolygonShape();
-
 		for (MapObject object : level.getMap().getLayers().get("spawn_points").getObjects()
 				.getByType(RectangleMapObject.class)) {
 			if (Integer.parseInt(object.getName()) == spawn_point) {
-				// System.out.println("Name: " + object.getName());
 				Rectangle rect = ((RectangleMapObject) object).getRectangle();
-				// System.out.println("x: " + rect.x + " y: " + rect.y);
-				// set the player in the middle of the tile
 				float temp_x = (float) Math.floor(rect.x / Level.tile_size);
 				float temp_y = (float) Math.floor(rect.y / Level.tile_size);
 				temp_x *= Level.tile_size;
 				temp_y *= Level.tile_size;
 				temp_x += Level.tile_size / 2;
 				temp_y += Level.tile_size / 2;
-
-				// System.out.println("tile x: " + temp_x + " tile y: " + temp_y);
 				body.setTransform(new Vector2(temp_x, temp_y), 0);
 			}
 
 		}
-
-		// code for collision
-		/*
-		 * for (MapObject object :
-		 * level.getMap().getLayers().get(3).getObjects().getByType(RectangleMapObject.
-		 * class)) { Rectangle rect = ((RectangleMapObject) object).getRectangle();
-		 * 
-		 * bodyDefworld.type = BodyDef.BodyType.StaticBody;
-		 * bodyDefworld.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() +
-		 * rect.getHeight() / 2));
-		 * 
-		 * level.bodyworld = level.getWorld().createBody(bodyDefworld);
-		 * 
-		 * shapeworld.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-		 * //.out.println(rect.getWidth()); fixtureDefworld.shape = shapeworld;
-		 * level.bodyworld.createFixture(fixtureDefworld); }
-		 */
 	}
 
 	public Player_control get_control() {
@@ -291,5 +257,4 @@ public class Player {
 	public Vector2 get_position_tile() {
 		return control.position_tile;
 	}
-
 }

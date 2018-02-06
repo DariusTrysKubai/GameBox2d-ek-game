@@ -1,44 +1,12 @@
 package states;
 
-import java.awt.geom.RectangularShape;
-
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.ai.pfa.PathSmoother;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.TimeUtils;
-
 import Handlers.GameStateManager;
-import ai_pathfinding.TmxTiledManhattanDistance;
-import ai_pathfinding.TmxTiledRaycastCollisionDetector;
-import ai_pathfinding.TmxTiledSmoothableGraphPath;
+import InputHandlers.MyInputMUX;
 import items.ItemManager;
 import main.Level;
-import nodeNGraph.TmxFlatTiledGraph;
-import nodeNGraph.TmxFlatTiledNode;
 import player.Player;
 import scenes.Hud;
 
@@ -50,6 +18,7 @@ public class Play extends GameState {
 	Level level;
 	Hud hud;
 	ItemManager itemmanager;
+	MyInputMUX input;
 	Box2DDebugRenderer debugRenderer;
 
 	public Play(GameStateManager gsm) {
@@ -61,15 +30,21 @@ public class Play extends GameState {
 		player = new Player(level.getWorld(), debug);
 		player.create(sb, shape, cam);
 		player.initLevel(level);
+		player.initControl(viewport);
 		debugRenderer = new Box2DDebugRenderer();
 		hud = new Hud(sb, hudcam);
 		itemmanager = new ItemManager();
 		itemmanager.init(sb, cam, hudcam, shape, player);
 		itemmanager.create();
 		cam.update();
-		
 		hud.init_player(player);
 		level.load_items(itemmanager);
+		
+		// Input
+		input = new MyInputMUX();
+		input.setHudProcessor(hud.getStage());
+		input.setGameProcessor(player.get_control().getInputProcessor());
+		input.create();
 	}
 
 	public void update(float dt) {
@@ -95,8 +70,8 @@ public class Play extends GameState {
 		if (debug) {
 			debugRenderer.render(level.getWorld(), cam.combined);
 		}
-		
-		hud.stage.draw();
+
+		hud.getStage().draw();
 
 		// important!
 		level.getWorld().step(1 / 60f, 6, 2);

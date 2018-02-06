@@ -3,6 +3,7 @@ package player;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,7 +11,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Game;
 
+import InputHandlers.PlayerInputProcessor;
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
 import main.Level;
 import nodeNGraph.TmxFlatTiledNode;
@@ -29,6 +36,9 @@ public class Player_control {
 
 	Level level;
 	ShapeRenderer shape;
+
+	// Input control
+	PlayerInputProcessor input;
 
 	Vector2 clicked_tile;
 	public int move_direction = Player.UP; // 0-up, 1-right, 2-down, 3-left
@@ -51,6 +61,7 @@ public class Player_control {
 		path_dir = new ArrayList<Integer>();
 		moving = false;
 		position_tile = new Vector2();
+		input = new PlayerInputProcessor();
 	}
 
 	public void create(Level level, ShapeRenderer shape) {
@@ -77,9 +88,7 @@ public class Player_control {
 		// if player is not moving to another tile, BUT the path has something inside,
 		// initiate movement along the path
 		if (moving_to_next_tile && !path_dir.isEmpty()) {
-			// path_dir.get(0) means getting the next movement direction
-			// Moves the physical BOX2D body
-			// System.out.println("Updating movement");
+
 			update_movement(dt, path_dir.get(0));
 		}
 
@@ -111,7 +120,6 @@ public class Player_control {
 				path_dir.remove(0);
 			}
 		}
-	
 
 		// update standing tile
 		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);
@@ -120,7 +128,7 @@ public class Player_control {
 		// ---- CLICK ----
 		target_updated = false;
 		// Get pressed tile
-		if (Gdx.input.isTouched() && !target_updated_last_frame) {
+		if (input.getPressed() && !target_updated_last_frame) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
 
@@ -136,7 +144,7 @@ public class Player_control {
 
 		}
 
-		if (!Gdx.input.isTouched() && target_updated_last_frame) {
+		if (!input.getPressed() && target_updated_last_frame) {
 			target_updated_last_frame = false;
 			target_updated = false;
 		}
@@ -145,13 +153,13 @@ public class Player_control {
 		// path to that location is calculated
 
 		//
-		
-		if(waiting_for_path_update && !moving_to_next_tile) {
+
+		if (waiting_for_path_update && !moving_to_next_tile) {
 			pathfinding.update(true);
 			waiting_for_path_update = false;
 			generate_path_dir();
 		}
-		
+
 		if ((target_updated && !moving_to_next_tile)) {
 			pathfinding.update(target_updated);
 			// If target was updated generate new movement list
@@ -161,20 +169,9 @@ public class Player_control {
 			}
 		}
 
-		if (path_dir.isEmpty() && !moving_to_next_tile)
-
-		{
+		if (path_dir.isEmpty() && !moving_to_next_tile) {
 			set_moving(false);
-			// path.clear();
 		}
-
-		// System.out.println("Waiting for path update: " + waiting_for_path_update);
-		// System.out.println("Moving to next tile: " + moving_to_next_tile);
-		// System.out.println("Path size: " + path_dir.size());
-		// System.out.println();
-		// System.out.println("Moving: " + moving);
-		// System.out.println("Moving to next tile: " + moving_to_next_tile);
-		// System.out.println();
 
 	}
 
@@ -210,9 +207,6 @@ public class Player_control {
 	}
 
 	public void fix_position_in_tile() {
-		// System.out.println("Fixing position");
-		// System.out.println("old x: " + body.getPosition().x + " y: " +
-		// body.getPosition().y);
 		float temp_x = (float) Math.floor(player.body.getPosition().x / Level.tile_size);
 		float temp_y = (float) Math.floor(player.body.getPosition().y / Level.tile_size);
 		temp_x *= Level.tile_size;
@@ -220,8 +214,6 @@ public class Player_control {
 		temp_x += Level.tile_size / 2;
 		temp_y += Level.tile_size / 2;
 		player.body.setTransform(new Vector2(temp_x, temp_y), 0);
-		// System.out.println("new x: " + body.getPosition().x + " y: " +
-		// body.getPosition().y);
 	}
 
 	public void reset_shift() {
@@ -303,9 +295,9 @@ public class Player_control {
 		for (int i = 1; i < move_count; i++) {
 			// calculate how to move along the path and generate path_dir array.
 
-			//int delta_x = path.get(i).x - path.get(i - 1).x;
-			//int delta_y = path.get(i).y - path.get(i - 1).y;
-			//System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
+			// int delta_x = path.get(i).x - path.get(i - 1).x;
+			// int delta_y = path.get(i).y - path.get(i - 1).y;
+			// System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
 
 			// check if move to right
 			if (path.get(i).x > path.get(i - 1).x) {
@@ -327,6 +319,10 @@ public class Player_control {
 				path_dir.add(2);
 			}
 		}
+	}
+
+	public PlayerInputProcessor getInputProcessor() {
+		return input;
 	}
 
 }

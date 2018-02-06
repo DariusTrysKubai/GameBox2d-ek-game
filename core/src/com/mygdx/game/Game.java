@@ -61,7 +61,7 @@ public class Game extends ApplicationAdapter {
 		shape.setProjectionMatrix(cam.combined);
 		font = new BitmapFont();
 		gsm = new GameStateManager(this);
-		gsm.setState(new Menu(gsm));
+		gsm.setState(new Play(gsm));
 	}
 
 	@Override

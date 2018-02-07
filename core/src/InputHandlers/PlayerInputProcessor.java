@@ -30,8 +30,8 @@ public class PlayerInputProcessor implements InputProcessor{
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// stuff goes here
 		pressed = true;
-		Gdx.app.log(this.getClass().getName(), "Screen V_WIDTH: " + Game.V_WIDTH + " graphics width " + Gdx.graphics.getWidth());
-		Gdx.app.log(this.getClass().getName(), "touch down x: " + screenX + " y: " + screenY);
+		//Gdx.app.log(this.getClass().getName(), "Screen V_WIDTH: " + Game.V_WIDTH + " graphics width " + Gdx.graphics.getWidth());
+		//Gdx.app.log(this.getClass().getName(), "touch down x: " + screenX + " y: " + screenY);
 		//
 		return false;
 	}

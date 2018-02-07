@@ -1,6 +1,7 @@
 package scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -15,34 +16,40 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Game;
 
+import items.Item;
+import items.ItemManager;
 import player.Player;
 
 public class Hud implements Disposable {
 
 	boolean debug = false;
 
+	// references
 	Player player;
+	ItemManager itemmanager;
 
 	Stage stage;
 	Viewport viewport;
 	Label test_label;
 	ProgressBar progressbar_health;
 	ProgressBar progressbar_hunger;
+	Skin skin;
 
 	BitmapFont font12;
+
+	boolean itemHudActive = false;
 
 	String framerate = "Hello, I should be a frame rate";
 
 	public Hud(SpriteBatch sb, OrthographicCamera hudcam) {
 
-		Skin skin = new Skin(Gdx.files.internal("skins2/flat-earth-ui.json"));
+		skin = new Skin(Gdx.files.internal("skins2/flat-earth-ui.json"));
 
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("uni0553-webfont.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -54,18 +61,6 @@ public class Hud implements Disposable {
 		hudcam.update();
 
 		stage = new Stage(viewport, sb);
-
-		// BUTTON
-		// 1
-		TextButton button = new TextButton("Feed", skin);
-		button.setSize(150, 40);
-		button.setPosition((Game.V_WIDTH / 2) - (button.getWidth() / 2),
-				(Game.V_HEIGHT / 2) - (button.getHeight() / 2));
-		// 2
-		TextButton button2 = new TextButton("Test", skin);
-		button2.setSize(150, 40);
-		button2.setPosition((Game.V_WIDTH / 2) - (button.getWidth() / 2) - 40,
-				(Game.V_HEIGHT / 2) - (button.getHeight() / 2) + 250);
 
 		// PROGRESS BARS ---------------
 
@@ -94,15 +89,6 @@ public class Hud implements Disposable {
 		stats_table.add(label_health);
 		stats_table.add(label_hunger);
 		stats_table.row();
-		stats_table.add(button);
-		stats_table.add(button2);
-
-		button.addCaptureListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				player.stats.add_health(10);
-			}
-		});
 
 		stage.addActor(stats_table);
 		// stage.addActor(button2);
@@ -117,6 +103,52 @@ public class Hud implements Disposable {
 
 		table.add(test_label).align(Align.left);
 		table.row();
+		table.setName("My table");
+		stage.addActor(table);
+
+		// createItemWindow(stage);
+	}
+
+	private void createItemWindow(Stage stage) {
+		// Window test
+
+		Table table = new Table(skin);
+		// Window window = new Window("This is my first window and it is very long",
+		// skin);
+		// window.setSize(350, 150);
+		// window.setPosition(50, 50);
+
+		TextButton button = new TextButton("Eat", skin);
+		button.setSize(100, 50);
+		// button.setPosition(50, 50);
+		button.addCaptureListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				player.stats.add_health(10);
+			}
+		});
+
+		TextButton button2 = new TextButton("Pick", skin);
+		button2.setSize(100, 50);
+		// button.setPosition(50, 50);
+		button2.addCaptureListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				player.stats.add_health(10);
+			}
+		});
+
+		// window.addActor(button);
+
+		table.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+		table.setSize(500, 200);
+		// table.top();
+		table.add(button).expandX();
+		table.row().padTop(10);
+		table.add(button2);
+		table.setDebug(true);
+		table.setName("ClickedItemWindow");
+		// stage.addActor(window);
 		stage.addActor(table);
 	}
 
@@ -124,13 +156,25 @@ public class Hud implements Disposable {
 		framerate = String.valueOf(Gdx.graphics.getFramesPerSecond());
 		test_label.setText("fps: " + framerate);
 		progressbar_health.setValue(player.stats.get_health());
+		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+			for (Actor actor : stage.getActors()) {
+				if (actor.getName() != null && actor.getName().equalsIgnoreCase("ClickedItemWindow")) {
+					actor.remove();
+				}
+			}
+		}
 
+		deleteItemHudIfPlayerMoving();
 	}
 
 	public void init_player(Player player) {
 		this.player = player;
 	}
 	
+	public void init_itemManager(ItemManager itemmanager) {
+		this.itemmanager = itemmanager;
+	}
+
 	public Stage getStage() {
 		return this.stage;
 	}
@@ -138,6 +182,62 @@ public class Hud implements Disposable {
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+
+	public void createItemHud(final Item item) {
+		itemHudActive = true;
+		Table table = new Table(skin);
+
+		TextButton button_eat = new TextButton("Eat", skin);
+		button_eat.setSize(100, 50);
+		button_eat.addCaptureListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				player.stats.add_health(30);
+				itemmanager.remove_item(item);
+				// remove
+				for (Actor x : stage.getActors()) {
+					if (x.getName() != null && x.getName().equalsIgnoreCase("ClickedItemWindow")) {
+						x.remove();
+					}
+				}
+			}
+		});
+
+		TextButton button_cancel = new TextButton("cancel", skin);
+		button_cancel.setSize(100, 50);
+		button_cancel.addCaptureListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				// remove
+				for (Actor x : stage.getActors()) {
+					if (x.getName() != null && x.getName().equalsIgnoreCase("ClickedItemWindow")) {
+						x.remove();
+					}
+				}
+			}
+		});
+
+		table.setPosition(Gdx.graphics.getWidth() / 2, (Gdx.graphics.getHeight() / 2) - 100);
+		table.setSize(200, 200);
+		table.add(button_eat).expandX();
+		table.row().padTop(10);
+		table.add(button_cancel);
+		table.setDebug(debug);
+		table.setName("ClickedItemWindow");
+		stage.addActor(table);
+
+	}
+
+	public void deleteItemHudIfPlayerMoving() {
+
+		if (player.control.isMoving() && itemHudActive) {
+			for (Actor x : stage.getActors()) {
+				if (x.getName() != null && x.getName().equalsIgnoreCase("ClickedItemWindow")) {
+					x.remove();
+				}
+			}
+		}
 	}
 
 }

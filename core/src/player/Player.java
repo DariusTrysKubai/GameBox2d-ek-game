@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Game;
 
 import main.Level;
+import scenes.Hud;
 
 public class Player {
 
@@ -74,6 +75,7 @@ public class Player {
 
 	// references
 	Level level;
+	Hud hud;
 
 	public Player(World world, boolean debug) {
 
@@ -169,6 +171,11 @@ public class Player {
 		this.level = level;
 		spawn(3);
 	}
+	
+	public void initHud(Hud hud) {
+		this.hud = hud;
+		control.initHud(hud);
+	}
 
 	public void update(float dt) {
 		stats.update(dt);
@@ -257,4 +264,5 @@ public class Player {
 	public Vector2 get_position_tile() {
 		return control.position_tile;
 	}
+	
 }

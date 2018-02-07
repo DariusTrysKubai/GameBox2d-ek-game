@@ -100,5 +100,16 @@ public class ItemManager {
 			item.init(sb, cam, hudcam, shape, player, debug);
 		}
 	}
+	
+	public void remove_item(Item removing_item) {
+		items_list.remove(removing_item);
+		/*
+		for (Item item : items_list) {
+			if(item.equals(removing_item)) {
+				items_list.remove(removing_item);
+			}
+		}
+		*/
+	}
 
 }

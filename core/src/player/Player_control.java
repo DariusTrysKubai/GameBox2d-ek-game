@@ -21,6 +21,7 @@ import InputHandlers.PlayerInputProcessor;
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
 import main.Level;
 import nodeNGraph.TmxFlatTiledNode;
+import scenes.Hud;
 
 public class Player_control {
 
@@ -34,8 +35,10 @@ public class Player_control {
 
 	Vector2 position_tile;
 
+	// references
 	Level level;
 	ShapeRenderer shape;
+	Hud hud;
 
 	// Input control
 	PlayerInputProcessor input;
@@ -45,14 +48,17 @@ public class Player_control {
 	public float shift = 0;
 	public int dir = Player.DOWN;
 	public int dir_still = Player.DOWN;
+	public int dir_to_item = Player.DOWN;
 
 	boolean target_updated_last_frame = false;
 	boolean target_updated = false;
 	boolean is_target = false;
+	boolean is_target_item = false;
 
 	boolean waiting_for_path_update = false;
 	boolean moving = false;
 	boolean moving_to_next_tile = false;
+	boolean moving_last_frame = false;
 
 	public Player_control(Player player, boolean debug) {
 		this.player = player;
@@ -88,7 +94,6 @@ public class Player_control {
 		// if player is not moving to another tile, BUT the path has something inside,
 		// initiate movement along the path
 		if (moving_to_next_tile && !path_dir.isEmpty()) {
-
 			update_movement(dt, path_dir.get(0));
 		}
 
@@ -142,6 +147,13 @@ public class Player_control {
 				waiting_for_path_update = true;
 			}
 
+			// Check if clicked tile has an item
+			if (level.checkForItem((int) clicked_tile.x, (int) clicked_tile.y)) {
+				setTargetIsOnItem();
+			} else if (is_target_item) {
+				resetPathToItem();
+			}
+
 		}
 
 		if (!input.getPressed() && target_updated_last_frame) {
@@ -158,6 +170,7 @@ public class Player_control {
 			pathfinding.update(true);
 			waiting_for_path_update = false;
 			generate_path_dir();
+
 		}
 
 		if ((target_updated && !moving_to_next_tile)) {
@@ -167,11 +180,33 @@ public class Player_control {
 				waiting_for_path_update = false;
 				generate_path_dir();
 			}
+
+			if (is_target_item) {
+				setPathToItem();
+			}
 		}
 
-		if (path_dir.isEmpty() && !moving_to_next_tile) {
-			set_moving(false);
+		// checks if it is the last movement frame
+		if (moving) {
+			moving_last_frame = true;
 		}
+		if (moving_last_frame && !moving) {
+			moving_last_frame = false;
+		}
+
+		// Movement finishing code
+		if ((path_dir.isEmpty() && !moving_to_next_tile) && moving_last_frame) {
+			set_moving(false);
+			if (is_target_item) {
+				dir = dir_to_item;
+				dir_still = dir_to_item;
+				getItemHud();
+			} else {
+			}
+			resetPathToItem();
+		}
+
+		// if( (path_dir.isEmpty() && !moving_to_next_tile) && ) { }
 
 	}
 
@@ -300,22 +335,29 @@ public class Player_control {
 			// System.out.println(i + " Delta x: " + delta_x + " y: " + delta_y);
 
 			// check if move to right
-			if (path.get(i).x > path.get(i - 1).x) {
+
+			int thisPathX = path.get(i).x;
+			int prevPathX = path.get(i - 1).x;
+
+			int thisPathY = path.get(i).y;
+			int prevPathY = path.get(i - 1).y;
+
+			if (thisPathX > prevPathX) {
 				path_dir.add(1);
 			}
 
 			// left
-			if (path.get(i).x < path.get(i - 1).x) {
+			if (thisPathX < prevPathX) {
 				path_dir.add(3);
 			}
 
 			// up
-			if (path.get(i).y > path.get(i - 1).y) {
+			if (thisPathY > prevPathY) {
 				path_dir.add(0);
 			}
 
 			// down
-			if (path.get(i).y < path.get(i - 1).y) {
+			if (thisPathY < prevPathY) {
 				path_dir.add(2);
 			}
 		}
@@ -323,6 +365,49 @@ public class Player_control {
 
 	public PlayerInputProcessor getInputProcessor() {
 		return input;
+	}
+
+	public void initHud(Hud hud) {
+		this.hud = hud;
+	}
+
+	public void setTargetIsOnItem() {
+		is_target_item = true;
+
+	}
+
+	public void setPathToItem() {
+		Gdx.app.log(this.getClass().getName(), "setting path to item");
+
+		if (path_dir.size() == 1) {
+			dir_to_item = path_dir.get(0);
+			manualSetAnimation(dir_to_item);
+			path_dir.clear();
+			getItemHud();
+		} else {
+			dir_to_item = path_dir.get(path_dir.size() - 1);
+			if (!path_dir.isEmpty()) {
+				path_dir.remove(path_dir.size() - 1);
+			}
+
+		}
+	}
+
+	public void resetPathToItem() {
+		is_target_item = false;
+	}
+
+	public void getItemHud() {
+		hud.createItemHud(level.getItem((int) clicked_tile.x, (int) clicked_tile.y));
+	}
+
+	public boolean isMoving() {
+		return moving;
+	}
+	
+	public void manualSetAnimation(int direction) {
+		dir = direction;
+		dir_still = direction;
 	}
 
 }

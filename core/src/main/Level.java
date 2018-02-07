@@ -1,32 +1,24 @@
 package main;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import items.Item;
 import items.ItemManager;
-import states.GameState;
-
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Level {
 
@@ -44,12 +36,15 @@ public class Level {
 	public static final int tile_size = 32;
 
 	public Body bodyworld;
+	
+	Item[][] item_array;
 
 	public Level(OrthographicCamera cam) {
 		map = new TmxMapLoader().load("map/island.tmx");
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
 		renderer.setView(cam);
 		world = new World(new Vector2(0, 0), false);
+		item_array = new Item[width][height];
 	}
 
 	public void create(boolean debug) {
@@ -114,20 +109,32 @@ public class Level {
 		}
 		
 		// create and init all items
-		
 		itemmanager.create_items();
 		
+		// place items references in Level matrix/tiles
+		for (Item item : itemmanager.get_items()) {
+			item_array[(int) item.get_position_tile().x][(int) item.get_position_tile().y] = item;
+		}
+	}
+	
+	public boolean checkForItem(int x, int y) {
+		if(item_array[x][y] != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public Item getItem(int x, int y) {
+		return item_array[x][y];
+	}
+	
+	public void setItem(Item item, int x, int y) {
+		item_array[x][y] = item;
+	}
+	
+	public void removeItem(int x, int y) {
+		item_array[x][y] = null;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

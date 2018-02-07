@@ -151,4 +151,8 @@ public class Item {
 		x = temp_x - (item_size / 2);
 		y = temp_y - (item_size / 2);
 	}
+	
+	public String getName() {
+		return name;
+	}
 }

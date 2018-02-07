@@ -38,6 +38,8 @@ public class Play extends GameState {
 		itemmanager.create();
 		cam.update();
 		hud.init_player(player);
+		hud.init_itemManager(itemmanager);
+		player.initHud(hud);
 		level.load_items(itemmanager);
 		
 		// Input

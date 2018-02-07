@@ -36,6 +36,7 @@ public class Play extends GameState {
 		itemmanager = new ItemManager();
 		itemmanager.init(sb, cam, hudcam, shape, player);
 		itemmanager.create();
+		itemmanager.initLevel(level);
 		cam.update();
 		hud.init_player(player);
 		hud.init_itemManager(itemmanager);

@@ -218,7 +218,7 @@ public class Hud implements Disposable {
 			}
 		});
 
-		table.setPosition(Gdx.graphics.getWidth() / 2, (Gdx.graphics.getHeight() / 2) - 100);
+		table.setPosition(Game.V_WIDTH / 2, (Game.V_HEIGHT / 2) - 100);
 		table.setSize(200, 200);
 		table.add(button_eat).expandX();
 		table.row().padTop(10);

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Game;
 
+import InputHandlers.PlayerGestureProcessor;
 import InputHandlers.PlayerInputProcessor;
 import ai_pathfinding.TmxTiledSmoothableGraphPath;
 import main.Level;
@@ -42,6 +43,7 @@ public class Player_control {
 
 	// Input control
 	PlayerInputProcessor input;
+	PlayerGestureProcessor input_gesture;
 
 	Vector2 clicked_tile;
 	public int move_direction = Player.UP; // 0-up, 1-right, 2-down, 3-left
@@ -68,6 +70,7 @@ public class Player_control {
 		moving = false;
 		position_tile = new Vector2();
 		input = new PlayerInputProcessor();
+		input_gesture = new PlayerGestureProcessor();
 	}
 
 	public void create(Level level, ShapeRenderer shape) {
@@ -365,6 +368,10 @@ public class Player_control {
 
 	public PlayerInputProcessor getInputProcessor() {
 		return input;
+	}
+	
+	public PlayerGestureProcessor getGestureProcessor() {
+		return input_gesture;
 	}
 
 	public void initHud(Hud hud) {

@@ -3,6 +3,8 @@ package states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+
+import GameData.GameData;
 import Handlers.GameStateManager;
 import InputHandlers.MyInputMUX;
 import items.ItemManager;
@@ -14,6 +16,7 @@ public class Play extends GameState {
 
 	boolean debug = false;
 
+	GameData data;
 	Player player;
 	Level level;
 	Hud hud;
@@ -23,7 +26,6 @@ public class Play extends GameState {
 
 	public Play(GameStateManager gsm) {
 		super(gsm);
-
 		level = new Level(cam);
 		level.init(shape);
 		level.create(debug);
@@ -46,6 +48,7 @@ public class Play extends GameState {
 		// Input
 		input = new MyInputMUX();
 		input.setHudProcessor(hud.getStage());
+		input.setGestureProcessor(player.get_control().getGestureProcessor());
 		input.setGameProcessor(player.get_control().getInputProcessor());
 		input.create();
 	}

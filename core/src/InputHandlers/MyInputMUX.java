@@ -2,12 +2,15 @@ package InputHandlers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class MyInputMUX {
 
 	Stage stagehud;
-	PlayerInputProcessor Gameinputprocessor;
+	PlayerInputProcessor gameinputprocessor;
+	PlayerGestureProcessor playergestureprocessor;
 	
 	InputMultiplexer multiplexer;
 
@@ -19,13 +22,19 @@ public class MyInputMUX {
 		this.stagehud = stagehud;
 	}
 	
-	public void setGameProcessor(PlayerInputProcessor Gameinputprocessor) {
-		this.Gameinputprocessor = Gameinputprocessor;
+	public void setGameProcessor(PlayerInputProcessor gameinputprocessor) {
+		this.gameinputprocessor = gameinputprocessor;
 	}
+	
+	public void setGestureProcessor(PlayerGestureProcessor playergestureprocessor) {
+		this.playergestureprocessor = playergestureprocessor;
+	}
+
 
 	public void create() {
 		multiplexer.addProcessor(stagehud);
-		multiplexer.addProcessor(Gameinputprocessor);
+		multiplexer.addProcessor(new GestureDetector(playergestureprocessor));
+		multiplexer.addProcessor(gameinputprocessor);
 		Gdx.input.setInputProcessor(multiplexer);
 	}
 

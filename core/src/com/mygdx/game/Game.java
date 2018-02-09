@@ -4,16 +4,15 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import GameData.GameData;
 import Handlers.GameStateManager;
 import states.Menu;
-import states.Play;
 
 public class Game extends ApplicationAdapter {
 
@@ -27,6 +26,8 @@ public class Game extends ApplicationAdapter {
 	
 	public static final float STEP = 1 / 60f;
 	private float accum;
+	
+	GameData data;
 	
 	private BitmapFont font;
 	
@@ -47,6 +48,12 @@ public class Game extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+		
+		data = new GameData();
+		data.load();
+		System.out.println(data.isFirstTime());
+		data.save();
+		
 		shape = new ShapeRenderer();
 		sb = new SpriteBatch();
 		cam = new OrthographicCamera(V_WIDTH, V_HEIGHT);
@@ -61,7 +68,7 @@ public class Game extends ApplicationAdapter {
 		shape.setProjectionMatrix(cam.combined);
 		font = new BitmapFont();
 		gsm = new GameStateManager(this);
-		gsm.setState(new Play(gsm));
+		gsm.setState(new Menu(gsm));
 	}
 
 	@Override

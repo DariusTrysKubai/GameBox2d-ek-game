@@ -28,7 +28,7 @@ import scenes.Hud;
 
 public class Player {
 
-	boolean debug;
+	boolean debug = true;
 
 	// Player classes
 	public Player_control control;
@@ -79,7 +79,7 @@ public class Player {
 
 	public Player(World world, boolean debug) {
 
-		this.debug = debug;
+		//this.debug = debug;
 
 		// box2d create
 		PolygonShape shape;

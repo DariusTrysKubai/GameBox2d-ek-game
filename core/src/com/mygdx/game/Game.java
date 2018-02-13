@@ -17,7 +17,7 @@ import states.Menu;
 public class Game extends ApplicationAdapter {
 
 	public static final String TITLE = "GameJam2018";
-	public static final float SCALE = 0.6f;
+	public static final float SCALE = 0.4f;
 	public static final int V_WIDTH = (int)(1920 * SCALE);
 	public static final int V_HEIGHT = (int)(1080 * SCALE);
 	public static final int ORIGINAL_WIDTH = 5;

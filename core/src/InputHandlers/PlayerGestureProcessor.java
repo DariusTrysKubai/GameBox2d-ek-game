@@ -6,21 +6,30 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PlayerGestureProcessor implements GestureListener{
 
+		private boolean tap = false;
+		
+		public boolean getTap() {
+			return tap;
+		}
+		
+		public void resetTap() {
+			tap = false;
+		}
+	
 	   	@Override
 	   	public boolean touchDown(float x, float y, int pointer, int button) {
-			   	
+	   		
 		   	return false;
 	   	}
 		   	
 		@Override
 		public boolean tap(float x, float y, int count, int button) {
-				Gdx.app.log(this.getClass().getName(), "tap detected");
+			tap = true;
 			return false;
 		}
 			
 		@Override
 		public boolean longPress(float x, float y) {
-			Gdx.app.log(this.getClass().getName(), "long press detected");
 			return false;
 		}
 			

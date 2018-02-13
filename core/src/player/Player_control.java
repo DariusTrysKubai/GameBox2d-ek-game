@@ -26,7 +26,7 @@ import scenes.Hud;
 
 public class Player_control {
 
-	boolean debug = true;
+	boolean debug = false;
 
 	Player player;
 
@@ -64,7 +64,7 @@ public class Player_control {
 
 	public Player_control(Player player, boolean debug) {
 		this.player = player;
-		this.debug = debug;
+		//this.debug = debug;
 		clicked_tile = new Vector2();
 		path_dir = new ArrayList<Integer>();
 		moving = false;
@@ -136,6 +136,14 @@ public class Player_control {
 		// ---- CLICK ----
 		target_updated = false;
 		// Get pressed tile
+		
+		// Gestures input
+		if(input_gesture.getTap()) {
+			Gdx.app.log(this.getClass().getName(), "tap detected");
+		}
+		input_gesture.resetTap();
+		
+		// old input
 		if (input.getPressed() && !target_updated_last_frame) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
@@ -173,10 +181,13 @@ public class Player_control {
 			pathfinding.update(true);
 			waiting_for_path_update = false;
 			generate_path_dir();
-
+			
+			if (is_target_item) {
+				setPathToItem();
+			}
 		}
 
-		if ((target_updated && !moving_to_next_tile)) {
+		if (target_updated && !moving_to_next_tile) {
 			pathfinding.update(target_updated);
 			// If target was updated generate new movement list
 			if (target_updated) {
@@ -369,7 +380,7 @@ public class Player_control {
 	public PlayerInputProcessor getInputProcessor() {
 		return input;
 	}
-	
+
 	public PlayerGestureProcessor getGestureProcessor() {
 		return input_gesture;
 	}
@@ -384,7 +395,8 @@ public class Player_control {
 	}
 
 	public void setPathToItem() {
-		Gdx.app.log(this.getClass().getName(), "setting path to item");
+		//Gdx.app.log(this.getClass().getName(), "setting path to item");
+		Gdx.app.log(this.getClass().getName(), "Path size: " + path_dir.size());
 
 		if (path_dir.size() == 1) {
 			dir_to_item = path_dir.get(0);
@@ -392,9 +404,21 @@ public class Player_control {
 			path_dir.clear();
 			getItemHud();
 		} else {
-			dir_to_item = path_dir.get(path_dir.size() - 1);
-			if (!path_dir.isEmpty()) {
-				path_dir.remove(path_dir.size() - 1);
+			if (!moving) {
+				if (!path_dir.isEmpty()) {
+					dir_to_item = path_dir.get(path_dir.size() - 1);
+				}
+				if (!path_dir.isEmpty()) {
+					path_dir.remove(path_dir.size() - 1);
+				}
+			}else {
+				if (!path_dir.isEmpty()) {
+					dir_to_item = path_dir.get(path_dir.size() - 2);
+				}
+				if (!path_dir.isEmpty()) {
+					//path_dir.remove(path_dir.size() - 1);
+					path_dir.remove(path_dir.size() - 1);
+				}
 			}
 
 		}
@@ -411,7 +435,7 @@ public class Player_control {
 	public boolean isMoving() {
 		return moving;
 	}
-	
+
 	public void manualSetAnimation(int direction) {
 		dir = direction;
 		dir_still = direction;

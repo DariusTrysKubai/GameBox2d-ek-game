@@ -18,7 +18,7 @@ import nodeNGraph.TmxFlatTiledNode;
 
 public class Player_pathfinding {
 
-	boolean debug = true;
+	boolean debug = false;
 
 	Player player;
 	Level level;

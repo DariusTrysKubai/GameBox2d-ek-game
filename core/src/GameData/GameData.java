@@ -14,6 +14,8 @@ public class GameData {
 	private String last_launch_date;
 	private int player_health;
 	private int player_hunger;
+	private int player_tile_x;
+	private int player_tile_y;
 
 	protected Preferences getPrefs() {
 		if (prefs == null) {
@@ -26,11 +28,6 @@ public class GameData {
 	public GameData() {
 		getPrefs();
 		Date date = new Date(TimeUtils.millis());
-		System.out.println("Year: " + date.getTime());
-		System.out.println("Month: " + date.getMonth());
-		System.out.println("Day: " + date.getDate());
-		System.out.println("Hour: " + date.getHours());
-		System.out.println("Minute: " + date.getMinutes());
 	}
 
 	public void save() {

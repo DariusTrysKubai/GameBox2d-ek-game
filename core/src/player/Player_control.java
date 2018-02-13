@@ -35,6 +35,7 @@ public class Player_control {
 	ArrayList<Integer> path_dir;
 
 	Vector2 position_tile;
+	Vector2 position_tile_moving_from;
 
 	// references
 	Level level;
@@ -51,8 +52,8 @@ public class Player_control {
 	public int dir = Player.DOWN;
 	public int dir_still = Player.DOWN;
 	public int dir_to_item = Player.DOWN;
+	public int dir_save_last = Player.DOWN;
 
-	boolean target_updated_last_frame = false;
 	boolean target_updated = false;
 	boolean is_target = false;
 	boolean is_target_item = false;
@@ -64,10 +65,11 @@ public class Player_control {
 
 	public Player_control(Player player, boolean debug) {
 		this.player = player;
-		//this.debug = debug;
+		// this.debug = debug;
 		clicked_tile = new Vector2();
 		path_dir = new ArrayList<Integer>();
 		moving = false;
+		position_tile_moving_from = new Vector2();
 		position_tile = new Vector2();
 		input = new PlayerInputProcessor();
 		input_gesture = new PlayerGestureProcessor();
@@ -102,6 +104,7 @@ public class Player_control {
 
 		// move player along the path_dir
 		if ((!path_dir.isEmpty() && !moving_to_next_tile) && !waiting_for_path_update) {
+			setPositionTileMovingFrom();
 			switch (path_dir.get(0)) {
 			case 0:
 				move_up();
@@ -130,21 +133,13 @@ public class Player_control {
 		}
 
 		// update standing tile
-		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);
-		position_tile.y = (float) Math.floor(player.body.getPosition().y / 32);
+		setPositionTile();
 
 		// ---- CLICK ----
 		target_updated = false;
-		// Get pressed tile
-		
+
 		// Gestures input
-		if(input_gesture.getTap()) {
-			Gdx.app.log(this.getClass().getName(), "tap detected");
-		}
-		input_gesture.resetTap();
-		
-		// old input
-		if (input.getPressed() && !target_updated_last_frame) {
+		if (input_gesture.getTap()) {
 			clicked_tile.x = Level.get_clicked_tile_x(cam);
 			clicked_tile.y = Level.get_clicked_tile_y(cam);
 
@@ -154,7 +149,9 @@ public class Player_control {
 			Cell cell = layer.getCell((int) (clicked_tile.x), (int) (clicked_tile.y));
 			if (cell == null) {
 				target_updated = true;
-				target_updated_last_frame = true;
+			}
+
+			if (moving) {
 				waiting_for_path_update = true;
 			}
 
@@ -164,13 +161,8 @@ public class Player_control {
 			} else if (is_target_item) {
 				resetPathToItem();
 			}
-
 		}
-
-		if (!input.getPressed() && target_updated_last_frame) {
-			target_updated_last_frame = false;
-			target_updated = false;
-		}
+		input_gesture.resetTap();
 
 		// if target was updated "target_updated" switches TRUE for 1 frame and then the
 		// path to that location is calculated
@@ -181,7 +173,7 @@ public class Player_control {
 			pathfinding.update(true);
 			waiting_for_path_update = false;
 			generate_path_dir();
-			
+
 			if (is_target_item) {
 				setPathToItem();
 			}
@@ -395,7 +387,6 @@ public class Player_control {
 	}
 
 	public void setPathToItem() {
-		//Gdx.app.log(this.getClass().getName(), "setting path to item");
 		Gdx.app.log(this.getClass().getName(), "Path size: " + path_dir.size());
 
 		if (path_dir.size() == 1) {
@@ -404,24 +395,12 @@ public class Player_control {
 			path_dir.clear();
 			getItemHud();
 		} else {
-			if (!moving) {
-				if (!path_dir.isEmpty()) {
-					dir_to_item = path_dir.get(path_dir.size() - 1);
-				}
-				if (!path_dir.isEmpty()) {
-					path_dir.remove(path_dir.size() - 1);
-				}
-			}else {
-				if (!path_dir.isEmpty()) {
-					dir_to_item = path_dir.get(path_dir.size() - 2);
-				}
-				if (!path_dir.isEmpty()) {
-					//path_dir.remove(path_dir.size() - 1);
-					path_dir.remove(path_dir.size() - 1);
-				}
+			if (!path_dir.isEmpty()) {
+				dir_to_item = path_dir.get(path_dir.size() - 1);
+				path_dir.remove(path_dir.size() - 1);
 			}
-
 		}
+
 	}
 
 	public void resetPathToItem() {
@@ -439,6 +418,16 @@ public class Player_control {
 	public void manualSetAnimation(int direction) {
 		dir = direction;
 		dir_still = direction;
+	}
+
+	public void setPositionTile() {
+		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);
+		position_tile.y = (float) Math.floor(player.body.getPosition().y / 32);
+	}
+
+	public void setPositionTileMovingFrom() {
+		position_tile_moving_from.x = (float) Math.floor(player.body.getPosition().x / 32);
+		position_tile_moving_from.y = (float) Math.floor(player.body.getPosition().y / 32);
 	}
 
 }

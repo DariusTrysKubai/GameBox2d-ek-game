@@ -189,6 +189,8 @@ public class Player {
 	}
 
 	public void update(float dt) {
+		
+		//Gdx.app.log(this.getClass().getName(), "Player moving: " + control.moving_to_next_tile);
 		if (!pause) {
 			stats.update(dt);
 			control.update(dt, cam);
@@ -297,7 +299,17 @@ public class Player {
 		Gdx.app.log(this.getClass().getName(), "player x: " + data.getTileX());
 		stats.setHealth(data.getHealth());
 		stats.setHunger(data.getHunger());
-		control.setPosition_tile(new Vector2(data.getTileX(), data.getTileY()));
+		control.setPositionByTile(data.getTileX(), data.getTileY());
+	}
+	
+	public void setPosition(float x, float y) {
+		position.x = x;
+		position.y = y;
+		body.setTransform(new Vector2(x, y), 0);
+	}
+	
+	public Vector2 getPosition() {
+		return position;
 	}
 
 }

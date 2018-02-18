@@ -54,6 +54,7 @@ public class GameData {
 		player_health = prefs.getInteger("player_health");
 		player_hunger = prefs.getInteger("player_hunger");
 		player_tile_x = prefs.getInteger("player_tile_x");
+		Gdx.app.log(this.getClass().getName(), "Loading player tile x: " + player_tile_x);
 		player_tile_y = prefs.getInteger("player_tile_y");
 	}
 

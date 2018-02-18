@@ -24,9 +24,7 @@ public class Startup extends GameState {
 
 	@Override
 	public void update(float dt) {
-		
 		timer += dt;
-		
 	}
 
 	@Override
@@ -53,6 +51,18 @@ public class Startup extends GameState {
 	@Override
 	public void dispose() {
 
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

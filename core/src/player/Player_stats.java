@@ -37,5 +37,32 @@ public class Player_stats {
 			health = 0;
 		}
 	}
+	
+	public void add_hunger(int amount) {
+		this.hunger += amount;
+		fix_hunger();
+	}
+
+	public int get_hunger() {
+		return hunger;
+	}
+	
+	public void fix_hunger() {
+		if (hunger > 100) {
+			hunger = 100;
+		}
+		if(hunger < 0) {
+			hunger = 0;
+		}
+	}
+	
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	
+	public void setHunger(int hunger) {
+		this.hunger = hunger;
+	}
+
 
 }

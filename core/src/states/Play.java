@@ -15,8 +15,6 @@ import scenes.Hud;
 public class Play extends GameState {
 
 	boolean debug = false;
-
-	GameData data;
 	Player player;
 	Level level;
 	Hud hud;
@@ -33,6 +31,7 @@ public class Play extends GameState {
 		player.create(sb, shape, cam);
 		player.initLevel(level);
 		player.initControl(viewport);
+		player.initGameData(data);
 		debugRenderer = new Box2DDebugRenderer();
 		hud = new Hud(sb, hudcam);
 		itemmanager = new ItemManager();
@@ -51,6 +50,9 @@ public class Play extends GameState {
 		input.setGestureProcessor(player.get_control().getGestureProcessor());
 		input.setGameProcessor(player.get_control().getInputProcessor());
 		input.create();
+		
+		// load game
+		player.load(data);
 	}
 
 	public void update(float dt) {
@@ -93,6 +95,16 @@ public class Play extends GameState {
 	public void handleInput() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void pause() {
+		player.pause();
+	}
+
+	@Override
+	public void resume() {
+		player.resume();
 	}
 
 }

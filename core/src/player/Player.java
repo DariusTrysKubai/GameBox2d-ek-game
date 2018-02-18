@@ -23,12 +23,14 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.Game;
 
+import GameData.GameData;
 import main.Level;
 import scenes.Hud;
 
 public class Player {
 
 	boolean debug = true;
+	boolean pause = false;
 
 	// Player classes
 	public Player_control control;
@@ -76,10 +78,11 @@ public class Player {
 	// references
 	Level level;
 	Hud hud;
+	GameData data;
 
 	public Player(World world, boolean debug) {
 
-		//this.debug = debug;
+		// this.debug = debug;
 
 		// box2d create
 		PolygonShape shape;
@@ -171,41 +174,51 @@ public class Player {
 		this.level = level;
 		spawn(3);
 	}
-	
+
 	public void initHud(Hud hud) {
 		this.hud = hud;
 		control.initHud(hud);
 	}
 
-	public void update(float dt) {
-		stats.update(dt);
-		control.update(dt, cam);
-
-		if (control.moving) {
-			if (control.dir == 0) {
-				walkAnimation = walkAnimation_up;
-			}
-			if (control.dir == 1) {
-				walkAnimation = walkAnimation_right;
-			}
-			if (control.dir == 2) {
-				walkAnimation = walkAnimation_down;
-			}
-			if (control.dir == 3) {
-				walkAnimation = walkAnimation_left;
-			}
+	public void initGameData(GameData data) {
+		if (data == null) {
+			Gdx.app.log(this.getClass().getName(), "init data == null");
 		} else {
-			if (control.dir_still == 0) {
-				walkAnimation = still_up;
-			}
-			if (control.dir_still == 1) {
-				walkAnimation = still_right;
-			}
-			if (control.dir_still == 2) {
-				walkAnimation = still_down;
-			}
-			if (control.dir_still == 3) {
-				walkAnimation = still_left;
+			this.data = data;
+		}
+	}
+
+	public void update(float dt) {
+		if (!pause) {
+			stats.update(dt);
+			control.update(dt, cam);
+
+			if (control.moving) {
+				if (control.dir == 0) {
+					walkAnimation = walkAnimation_up;
+				}
+				if (control.dir == 1) {
+					walkAnimation = walkAnimation_right;
+				}
+				if (control.dir == 2) {
+					walkAnimation = walkAnimation_down;
+				}
+				if (control.dir == 3) {
+					walkAnimation = walkAnimation_left;
+				}
+			} else {
+				if (control.dir_still == 0) {
+					walkAnimation = still_up;
+				}
+				if (control.dir_still == 1) {
+					walkAnimation = still_right;
+				}
+				if (control.dir_still == 2) {
+					walkAnimation = still_down;
+				}
+				if (control.dir_still == 3) {
+					walkAnimation = still_left;
+				}
 			}
 		}
 	}
@@ -253,7 +266,6 @@ public class Player {
 				temp_y += Level.tile_size / 2;
 				body.setTransform(new Vector2(temp_x, temp_y), 0);
 			}
-
 		}
 	}
 
@@ -264,5 +276,28 @@ public class Player {
 	public Vector2 get_position_tile() {
 		return control.position_tile;
 	}
+
+	public void pause() {
+		Gdx.app.log(this.getClass().getName(), "pause");
+		pause = true;
+		if (data == null) {
+			Gdx.app.log(this.getClass().getName(), "Data doesn't exist");
+		}
+		data.savePlayersData(stats.get_health(), stats.get_hunger(), (int) control.getPosition_tile().x,
+				(int) control.getPosition_tile().y);
+	}
+
+	public void resume() {
+		Gdx.app.log(this.getClass().getName(), "resume");
+		pause = false;
+	}
 	
+	public void load(GameData data) {
+		Gdx.app.log(this.getClass().getName(), "loading players data");
+		Gdx.app.log(this.getClass().getName(), "player x: " + data.getTileX());
+		stats.setHealth(data.getHealth());
+		stats.setHunger(data.getHunger());
+		control.setPosition_tile(new Vector2(data.getTileX(), data.getTileY()));
+	}
+
 }

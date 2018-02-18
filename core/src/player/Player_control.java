@@ -423,11 +423,23 @@ public class Player_control {
 	public void setPositionTile() {
 		position_tile.x = (float) Math.floor(player.body.getPosition().x / 32);
 		position_tile.y = (float) Math.floor(player.body.getPosition().y / 32);
+		
+		player.position.x = position_tile.x * Level.tile_size;
+		player.position.y = position_tile.y * Level.tile_size;
+		fix_position_in_tile();
 	}
 
 	public void setPositionTileMovingFrom() {
 		position_tile_moving_from.x = (float) Math.floor(player.body.getPosition().x / 32);
 		position_tile_moving_from.y = (float) Math.floor(player.body.getPosition().y / 32);
+	}
+	
+	public Vector2 getPosition_tile() {
+		return position_tile;
+	}
+
+	public void setPosition_tile(Vector2 position_tile) {
+		this.position_tile = position_tile;
 	}
 
 }

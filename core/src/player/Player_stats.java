@@ -5,18 +5,29 @@ public class Player_stats {
 	int health;
 	int hidratation;
 	int hunger;
+	int level;
 	float acum;
+	float acum2;
 
 	public Player_stats() {
 		health = 100;
+		hunger = 100;
 		acum = 0;
+		acum2 = 0;
 	}
 
 	public void update(float dt) {
 		acum += dt;
-		if (acum >= 0.25f) {
+		// 20h to 0 = 720f
+		if (acum >= 5f) {
 			acum = 0;
-			add_health(-1);
+			add_hunger(-1);
+		}
+		
+		acum2 += dt;
+		if(hunger == 0 && acum2 >= 10f) {
+			acum2 = 0;
+			health -= 5;
 		}
 	}
 
@@ -56,12 +67,24 @@ public class Player_stats {
 		}
 	}
 	
-	public void setHealth(int health) {
+	public void set_health(int health) {
 		this.health = health;
 	}
 	
-	public void setHunger(int hunger) {
+	public void set_hunger(int hunger) {
 		this.hunger = hunger;
+	}
+	
+	public void add_level() {
+		level++;
+	}
+	
+	public void set_level(int value) {
+		level = value;
+	}
+	
+	public int get_level() {
+		return level;
 	}
 
 

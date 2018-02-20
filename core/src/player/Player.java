@@ -186,6 +186,15 @@ public class Player {
 		} else {
 			this.data = data;
 		}
+		
+		// if first time, set level to 1
+		if(!data.isNotFirstTime()) {
+			stats.set_level(1);
+			control.setPositionTile();
+			data.setPosition((int)control.getPosition_tile().x, (int)control.getPosition_tile().y);
+			data.setPlayer_health(stats.get_health());
+			data.setPlayer_hunger(stats.get_hunger());
+		}
 	}
 
 	public void update(float dt) {
@@ -274,6 +283,10 @@ public class Player {
 	public Player_control get_control() {
 		return control;
 	}
+	
+	public Player_stats get_stats() {
+		return stats;
+	}
 
 	public Vector2 get_position_tile() {
 		return control.position_tile;
@@ -286,7 +299,7 @@ public class Player {
 			Gdx.app.log(this.getClass().getName(), "Data doesn't exist");
 		}
 		data.savePlayersData(stats.get_health(), stats.get_hunger(), (int) control.getPosition_tile().x,
-				(int) control.getPosition_tile().y);
+				(int) control.getPosition_tile().y, stats.get_level());
 	}
 
 	public void resume() {
@@ -297,8 +310,10 @@ public class Player {
 	public void load(GameData data) {
 		Gdx.app.log(this.getClass().getName(), "loading players data");
 		Gdx.app.log(this.getClass().getName(), "player x: " + data.getTileX());
-		stats.setHealth(data.getHealth());
-		stats.setHunger(data.getHunger());
+		stats.set_health(data.getHealth());
+		Gdx.app.log(this.getClass().getName(), "Hunger before: " + stats.get_hunger());
+		stats.set_hunger(data.getHunger());
+		Gdx.app.log(this.getClass().getName(), "Hunger after: " + stats.get_hunger());
 		control.setPositionByTile(data.getTileX(), data.getTileY());
 	}
 	

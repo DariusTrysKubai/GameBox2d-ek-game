@@ -36,7 +36,7 @@ public class Hud implements Disposable {
 
 	Stage stage;
 	Viewport viewport;
-	Label test_label;
+	Label playerLevel_label;
 	ProgressBar progressbar_health;
 	ProgressBar progressbar_hunger;
 	Skin skin;
@@ -45,7 +45,7 @@ public class Hud implements Disposable {
 
 	boolean itemHudActive = false;
 
-	String framerate = "Hello, I should be a frame rate";
+	String playerLevel = "Hello, I should be a player level";
 
 	public Hud(SpriteBatch sb, OrthographicCamera hudcam) {
 
@@ -62,51 +62,41 @@ public class Hud implements Disposable {
 
 		stage = new Stage(viewport, sb);
 
-		// PROGRESS BARS ---------------
-
-		// HEALTH
-		// health laber
-		Label label_health = new Label("HEALTH", new Label.LabelStyle(font12, Color.WHITE));
-		// health progress bar
-		progressbar_health = new ProgressBar(0, 100, 1, false, skin, "health-horizontal");
-		progressbar_health.setSize(600, 20);
-
-		// HUNGER
-		Label label_hunger = new Label("HUNGER", new Label.LabelStyle(font12, Color.WHITE));
-		// health progress bar
-		progressbar_hunger = new ProgressBar(0, 100, 1, false, skin, "hunger-horizontal");
-		progressbar_hunger.setSize(600, 20);
-		progressbar_hunger.setValue(40);
-
-		// table
-		Table stats_table = new Table();
-		stats_table.top();
-		stats_table.setDebug(debug);
-		stats_table.setFillParent(true);
-		stats_table.add(progressbar_health).pad(10).width(200);
-		stats_table.add(progressbar_hunger).pad(10).width(200);
-		stats_table.row();
-		stats_table.add(label_health);
-		stats_table.add(label_hunger);
-		stats_table.row();
-
-		stage.addActor(stats_table);
-		// stage.addActor(button2);
+		createStatsBars(stage);
 		// ---------------
 
 		Table table = new Table();
 		table.setDebug(debug);
 		table.setPosition(10, 30);
 
-		test_label = new Label(framerate, new Label.LabelStyle(font12, Color.WHITE));
-		test_label.setWrap(true);
+		playerLevel_label = new Label(playerLevel, new Label.LabelStyle(font12, Color.WHITE));
+		playerLevel_label.setWrap(true);
 
-		table.add(test_label).align(Align.left);
+		table.add(playerLevel_label).align(Align.left);
 		table.row();
 		table.setName("My table");
 		stage.addActor(table);
 
 		// createItemWindow(stage);
+	}
+	
+	public void update(float dt) {
+
+		playerLevel = String.valueOf(player.get_stats().get_level());
+		playerLevel_label.setText("Level: " + playerLevel);
+
+		progressbar_health.setValue(player.get_stats().get_health());
+		progressbar_hunger.setValue(player.get_stats().get_hunger());
+		
+		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+			for (Actor actor : stage.getActors()) {
+				if (actor.getName() != null && actor.getName().equalsIgnoreCase("ClickedItemWindow")) {
+					actor.remove();
+				}
+			}
+		}
+
+		deleteItemHudIfPlayerMoving();
 	}
 
 	private void createItemWindow(Stage stage) {
@@ -124,7 +114,7 @@ public class Hud implements Disposable {
 		button.addCaptureListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				player.stats.add_health(10);
+				player.stats.add_hunger(10);
 			}
 		});
 
@@ -134,10 +124,10 @@ public class Hud implements Disposable {
 		button2.addCaptureListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				player.stats.add_health(10);
+				player.stats.add_hunger(10);
 			}
 		});
-
+		
 		// window.addActor(button);
 
 		table.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -152,25 +142,10 @@ public class Hud implements Disposable {
 		stage.addActor(table);
 	}
 
-	public void update(float dt) {
-		framerate = String.valueOf(Gdx.graphics.getFramesPerSecond());
-		test_label.setText("fps: " + framerate);
-		progressbar_health.setValue(player.stats.get_health());
-		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-			for (Actor actor : stage.getActors()) {
-				if (actor.getName() != null && actor.getName().equalsIgnoreCase("ClickedItemWindow")) {
-					actor.remove();
-				}
-			}
-		}
-
-		deleteItemHudIfPlayerMoving();
-	}
-
 	public void init_player(Player player) {
 		this.player = player;
 	}
-	
+
 	public void init_itemManager(ItemManager itemmanager) {
 		this.itemmanager = itemmanager;
 	}
@@ -193,7 +168,7 @@ public class Hud implements Disposable {
 		button_eat.addCaptureListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				player.stats.add_health(30);
+				player.stats.add_hunger(15);
 				itemmanager.remove_item(item);
 				// remove
 				for (Actor x : stage.getActors()) {
@@ -238,6 +213,47 @@ public class Hud implements Disposable {
 				}
 			}
 		}
+	}
+
+	public void createPlayerLevelTable(Stage stage) {
+		Table table = new Table();
+		table.setPosition(10, 30);
+		playerLevel_label = new Label(playerLevel, new Label.LabelStyle(font12, Color.WHITE));
+		playerLevel_label.setWrap(true);
+		table.add(playerLevel_label).align(Align.left);
+		table.row();
+		table.setName("playerLevel");
+		stage.addActor(table);
+	}
+
+	public void createStatsBars(Stage stage) {
+		// HEALTH
+		// health label
+		Label label_health = new Label("HEALTH", new Label.LabelStyle(font12, Color.WHITE));
+		// health progress bar
+		progressbar_health = new ProgressBar(0, 100, 1, false, skin, "health-horizontal");
+		progressbar_health.setSize(600, 20);
+
+		// HUNGER
+		Label label_hunger = new Label("HUNGER", new Label.LabelStyle(font12, Color.WHITE));
+		// health progress bar
+		progressbar_hunger = new ProgressBar(0, 100, 1, false, skin, "hunger-horizontal");
+		progressbar_hunger.setSize(600, 20);
+
+		// table
+		Table stats_table = new Table();
+		stats_table.top();
+		stats_table.setDebug(debug);
+		stats_table.setFillParent(true);
+		stats_table.add(progressbar_health).pad(10).width(200);
+		stats_table.add(progressbar_hunger).pad(10).width(200);
+		stats_table.row();
+		stats_table.add(label_health);
+		stats_table.add(label_hunger);
+		stats_table.row();
+
+		stage.addActor(stats_table);
+
 	}
 
 }

@@ -25,6 +25,7 @@ public class GameData {
 	private int player_hunger;
 	private int player_tile_x;
 	private int player_tile_y;
+	private int player_level;
 	long timeClosed;
 	long timeOpened;
 
@@ -47,6 +48,7 @@ public class GameData {
 		prefs.putInteger("player_hunger", player_hunger);
 		prefs.putInteger("player_tile_x", player_tile_x);
 		prefs.putInteger("player_tile_y", player_tile_y);
+		prefs.putInteger("player_level", player_level);
 		prefs.putLong("timeClosed", timeClosed);
 		prefs.putLong("timeOpened", timeOpened);
 		prefs.flush();
@@ -59,6 +61,7 @@ public class GameData {
 		player_hunger = prefs.getInteger("player_hunger");
 		player_tile_x = prefs.getInteger("player_tile_x");
 		player_tile_y = prefs.getInteger("player_tile_y");
+		player_level = prefs.getInteger("player_level");
 		timeClosed = prefs.getLong("timeClosed");
 		timeOpened = prefs.getLong("timeOpened");
 	}
@@ -71,11 +74,12 @@ public class GameData {
 		return prefs.getBoolean("NOT_FIRST_LAUNCH");
 	}
 
-	public void savePlayersData(int health, int hunger, int tile_x, int tile_y) {
+	public void savePlayersData(int health, int hunger, int tile_x, int tile_y, int level) {
 		player_health = health;
 		player_hunger = hunger;
 		player_tile_x = tile_x;
 		player_tile_y = tile_y;
+		player_level = level;
 	}
 
 	public int getHealth() {
@@ -105,6 +109,27 @@ public class GameData {
 	public long getTimeElapsed() {
 		long temp = TimeUtils.timeSinceMillis(timeClosed);
 		return temp;
+	}
+	
+	public void setPosition(int x, int y) {
+		player_tile_x = x;
+		player_tile_y = y;
+	}
+
+	public int getPlayer_health() {
+		return player_health;
+	}
+
+	public void setPlayer_health(int player_health) {
+		this.player_health = player_health;
+	}
+
+	public int getPlayer_hunger() {
+		return player_hunger;
+	}
+
+	public void setPlayer_hunger(int player_hunger) {
+		this.player_hunger = player_hunger;
 	}
 
 }

@@ -54,6 +54,11 @@ public class Play extends GameState {
 		
 		// load game
 		player.load(data);
+		
+		// check for time elapsed
+		if(data.isNotFirstTime()) {
+			Gdx.app.log(this.getClass().getName(), "Seconds elapsed since last time played: " + (int)(data.getTimeElapsed()/1000) );
+		}
 	}
 
 	public void update(float dt) {

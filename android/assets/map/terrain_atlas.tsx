@@ -26,46 +26,73 @@
   </objectgroup>
  </tile>
  <tile id="358">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="15.875" y="11.9375" width="16.125" height="20.0625"/>
   </objectgroup>
  </tile>
  <tile id="359">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="10.25" width="32" height="21.75"/>
   </objectgroup>
  </tile>
  <tile id="360">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="11.875" width="17" height="20.125"/>
   </objectgroup>
  </tile>
  <tile id="390">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="16.8125" y="0" width="15.1875" height="32"/>
   </objectgroup>
  </tile>
  <tile id="391">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="0" width="32" height="32"/>
   </objectgroup>
  </tile>
  <tile id="392">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="0" width="16.5625" height="32"/>
   </objectgroup>
  </tile>
  <tile id="422">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="15.875" y="0" width="16.125" height="16"/>
   </objectgroup>
  </tile>
  <tile id="423">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="0" width="32" height="15.6875"/>
   </objectgroup>
  </tile>
  <tile id="424">
+  <properties>
+   <property name="collision" type="bool" value="true"/>
+  </properties>
   <objectgroup draworder="index">
    <object id="1" x="0" y="0" width="15.9375" height="17.0625"/>
   </objectgroup>

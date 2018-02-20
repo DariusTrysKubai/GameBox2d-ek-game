@@ -68,6 +68,7 @@ public class Game extends ApplicationAdapter {
 
 		data = new GameData();
 		data.load();
+		data.initTimeOpen();
 
 		shape = new ShapeRenderer();
 		sb = new SpriteBatch();
@@ -106,6 +107,7 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
+		data.initTimeClosed();
 	}
 
 	public void resize(int w, int h) {
@@ -115,6 +117,7 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void pause() {
 		Gdx.app.log(this.getClass().getName(), "pause");
+		data.initTimeClosed();
 		gsm.pause();
 		data.save();
 	}
@@ -122,6 +125,7 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void resume() {
 		Gdx.app.log(this.getClass().getName(), "resume");
+		data.initTimeOpen();
 		gsm.resume();
 	}
 

@@ -25,6 +25,8 @@ public class GameData {
 	private int player_hunger;
 	private int player_tile_x;
 	private int player_tile_y;
+	long timeClosed;
+	long timeOpened;
 
 	protected Preferences getPrefs() {
 		if (prefs == null) {
@@ -45,6 +47,8 @@ public class GameData {
 		prefs.putInteger("player_hunger", player_hunger);
 		prefs.putInteger("player_tile_x", player_tile_x);
 		prefs.putInteger("player_tile_y", player_tile_y);
+		prefs.putLong("timeClosed", timeClosed);
+		prefs.putLong("timeOpened", timeOpened);
 		prefs.flush();
 		Gdx.app.log(this.getClass().getName(), "data save flush");
 	}
@@ -54,15 +58,16 @@ public class GameData {
 		player_health = prefs.getInteger("player_health");
 		player_hunger = prefs.getInteger("player_hunger");
 		player_tile_x = prefs.getInteger("player_tile_x");
-		Gdx.app.log(this.getClass().getName(), "Loading player tile x: " + player_tile_x);
 		player_tile_y = prefs.getInteger("player_tile_y");
+		timeClosed = prefs.getLong("timeClosed");
+		timeOpened = prefs.getLong("timeOpened");
 	}
 
 	public void resetData() {
 		not_fist_launch = false;
 	}
 
-	public boolean isFirstTime() {
+	public boolean isNotFirstTime() {
 		return prefs.getBoolean("NOT_FIRST_LAUNCH");
 	}
 
@@ -87,6 +92,19 @@ public class GameData {
 
 	public int getTileY() {
 		return player_tile_y;
+	}
+
+	public void initTimeOpen() {
+		timeOpened = TimeUtils.millis();
+	}
+
+	public void initTimeClosed() {
+		timeClosed = TimeUtils.millis();
+	}
+	
+	public long getTimeElapsed() {
+		long temp = TimeUtils.timeSinceMillis(timeClosed);
+		return temp;
 	}
 
 }
